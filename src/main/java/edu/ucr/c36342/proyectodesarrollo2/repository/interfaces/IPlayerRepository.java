@@ -9,7 +9,7 @@ public interface IPlayerRepository {
     void save(Player player) throws IOException;
     Player findByName(String name) throws IOException;
     List<Player> findAll() throws IOException;
-    void update(Player player);
-    void delete(Player player);
-    boolean exists(String name);
+    void update(Player player) throws IOException;
+    boolean delete(Player player) throws IOException;
+    boolean exists(String name) throws IOException;
 }

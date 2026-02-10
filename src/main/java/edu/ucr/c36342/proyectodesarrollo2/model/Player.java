@@ -12,6 +12,12 @@ public class Player {
         this.wins = 0;
         this.losses = 0;
     }
+    //constructor para deserialización
+    public Player(String name, int wins, int losses) {
+        this.name = name;
+        this.wins = wins;
+        this.losses = losses;
+    }
 
     public String getName() {
         return name;
@@ -25,6 +31,10 @@ public class Player {
         return losses;
     }
 
+    public void setWins(int wins) {this.wins = wins;}
+
+    public void setLosses(int losses) {this.losses = losses;}
+
     public void incrementWins() {
         this.wins++;
     }
@@ -34,7 +44,11 @@ public class Player {
     }
 
     public double getWinRate() {
-        return wins/(double)losses;
+        int totalGames = wins + losses;
+        if (totalGames == 0) {
+            return 0.0;//sin partidas jugadas
+        }
+        return wins / (double) totalGames;// % de victorias
     }
 
     @Override

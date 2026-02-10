@@ -94,11 +94,11 @@ public class PlayerRepositoryFile implements IPlayerRepository{
     }
 
     @Override
-    public void update(Player player) {
+    public void update(Player player) throws IOException {
         if(player == null) {
             throw new NullPointerException("Player no puede ser null");
         }
-
+        loadDocument();
         Element root = doc.getRootElement();
         List<Element> players = root.getChildren("player");
         for(Element playerElem : players){
@@ -117,13 +117,73 @@ public class PlayerRepositoryFile implements IPlayerRepository{
     }
 
     @Override
-    public void delete(Player player) {
+    public boolean delete(Player player) throws IOException {
+        if (player == null) {
+            throw new NullPointerException("Player no puede ser null");
+        }
+
+        loadDocument();
+
+        Element root = doc.getRootElement();
+        Element playerElement = findPlayerElement(player.getName(), root);
+
+        if(playerElement == null){
+            return false;
+        }
+
+        root.removeContent(playerElement);
+        saveXml();
+        return true;
+    }
+
+    /**
+     * Verifica si un jugador existe en el repositorio.
+     *
+     * @param playerName Nombre del jugador a buscar
+     * @return true si el jugador existe, false en caso contrario
+     * @throws IllegalArgumentException Si playerName es null o vacío
+     */
+    @Override
+    public boolean exists(String playerName) throws IOException {
+        if (playerName == null || playerName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Player name no puede ser null o vacío");
+        }
+        loadDocument();
+
+            Element root = doc.getRootElement();
+            List<Element> players = root.getChildren("player");
+
+            return players.stream()
+                    .anyMatch(playerElem ->
+                            playerName.equals(playerElem.getAttributeValue("name"))
+                    );
 
     }
 
-    @Override
-    public boolean exists(String name) {
-        return false;
+    /**
+     * Verifica si un jugador existe en el repositorio, usando un objeto player.
+     *
+     * @param player Jugador a buscar
+     * @return true si el jugador existe, false en caso contrario
+     * @throws IllegalArgumentException Si player es null
+     */
+    public boolean exists(Player player) throws IOException {
+        if (player == null) {
+            throw new IllegalArgumentException("Player no puede ser null");
+        }
+        return exists(player.getName());
+    }
+
+    private Element findPlayerElement(String playerName, Element root) {
+        if (playerName == null || playerName.trim().isEmpty() || root == null) {
+            return null;
+        }
+        List<Element> players = root.getChildren("player");
+
+        return players.stream().filter(playerElemn ->
+                playerName.equals(playerElemn.getAttributeValue("name")))
+                .findFirst().orElse(null);
+
     }
 
     private void loadDocument() throws IOException {
@@ -165,17 +225,7 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         int wins = Integer.parseInt(playerElement.getChildText("wins"));
         int losses = Integer.parseInt(playerElement.getChildText("losses"));
 
-        Player player = new Player(name);
-
-        // Establecer las victorias y derrotas
-        for (int i = 0; i < wins; i++) {
-            player.incrementWins();
-        }
-        for (int i = 0; i < losses; i++) {
-            player.incrementLosses();
-        }
-
-        return player;
+        return new Player(name, wins, losses);
     }
 
     private void saveXml() throws IOException{
