@@ -65,6 +65,12 @@ public class GameRepository implements IGameRepository {
     public Game load(String filePath) throws IOException {
         loadDocument();
 
+        if (xmlFile == null) {
+            throw new NullPointerException("No hay juegos guardados.");
+        }
+
+
+
 
 
         return null;

@@ -49,6 +49,8 @@ public class PlayerRepositoryFile implements IPlayerRepository{
             throw new NullPointerException("Player no puede ser null");
         }
 
+        //TODO verificar duplicados
+
         loadDocument();
 
         Element root = doc.getRootElement();
