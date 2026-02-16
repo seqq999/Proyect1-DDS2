@@ -9,85 +9,148 @@ import edu.ucr.c36342.proyectodesarrollo2.model.enums.GameStatus;
 import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IGameRepository;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementación del repositorio de partidas usando archivos XML.
+ * Cada archivo contiene una sola partida guardada.
+ *
+ * Estructura: Un archivo XML = Una partida
+ * Ejemplo:
+ * - saved_games/monday.xml    → Partida del lunes
+ * - saved_games/tuesday.xml   → Partida del martes
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class GameRepository implements IGameRepository {
-    private final String filePath;
-    private File xmlFile;
-    private Document doc;
 
-    public GameRepository(String filePath) throws IOException {
-        this.filePath = filePath;
-        File file = new File(filePath);
+    /**
+     * Constructor del repositorio de partidas.
+     * No requiere configuración inicial.
+     */
+    public GameRepository() {
+        // No necesita estado interno
+    }
 
-        File parentrDir = file.getParentFile();
-        if (parentrDir != null && !parentrDir.exists()) {
-            parentrDir.mkdirs();
+    /**
+     * Guarda una partida en un archivo XML específico.
+     * Si el archivo ya existe, lo sobrescribe.
+     * Crea los directorios necesarios si no existen.
+     *
+     * @param game El juego a guardar
+     * @param filePath Ruta completa del archivo donde guardar (ej: "saved_games/partida1.xml")
+     * @throws IllegalArgumentException Si game o filePath son null/vacíos
+     * @throws IOException Si hay error al guardar el archivo
+     */
+    @Override
+    public void save(Game game, String filePath) throws IOException {
+        // Validaciones
+        if (game == null) {
+            throw new IllegalArgumentException("Game no puede ser null");
+        }
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("FilePath no puede ser null o vacío");
         }
 
-        if(!file.exists()) {
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-                writer.write("<games>\n");
-                writer.write("</games>");
-            } catch (IOException e) {
-                throw e;
+        // Crear directorio padre si no existe
+        File file = new File(filePath);
+        File parentDir = file.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean created = parentDir.mkdirs();
+            if (!created) {
+                throw new IOException("No se pudo crear el directorio: " + parentDir.getAbsolutePath());
             }
         }
 
-        this.xmlFile = file;
-        loadDocument();
-    }
-    @Override
-    public void save(Game game, String filePath) throws IOException {
-        if (game == null) {
-            throw new NullPointerException("Game no puede ser null");
-        }
-
-        loadDocument();
-
-        Element root = doc.getRootElement();
-        Element gameElement = gameToElement(game);
-        root.addContent(gameElement);
-
-        saveXml();
-    }
-
-    @Override
-    public List<Game> load(String filePath) throws IOException {
-        loadDocument();
-
-        List<Game> games = new ArrayList<>();
-        Element root = doc.getRootElement();
-        List<Element> gameElements = root.getChildren("game");
-
-        for(Element gameElement : gameElements){
-            games.add(elementToGame(gameElement));
-        }
-        return games;
-    }
-
-    @Override
-    public boolean exists(String filePath) throws IOException {
-        return false;
-    }
-    private void loadDocument() throws IOException {
         try {
-            SAXBuilder saxBuilder = new SAXBuilder();
-            this.doc = saxBuilder.build(this.xmlFile);
+            // Crear elemento del juego
+            Element gameElement = gameToElement(game);
+
+            // Crear documento con el juego como elemento raíz
+            Document document = new Document(gameElement);
+
+            // Guardar en el archivo especificado
+            XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                outputter.output(document, fos);
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Error al cargar/parsing el archivo XML: " + e.getMessage(), e);
+            throw new IOException("Error al guardar la partida: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Carga una partida desde un archivo XML específico.
+     *
+     * @param filePath Ruta completa del archivo a cargar
+     * @return El juego reconstruido desde el archivo
+     * @throws IllegalArgumentException Si filePath es null/vacío
+     * @throws FileNotFoundException Si el archivo no existe
+     * @throws IOException Si hay error al leer o parsear el archivo
+     */
+    @Override
+    public Game load(String filePath) throws IOException {
+        // Validaciones
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("FilePath no puede ser null o vacío");
+        }
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("Archivo no encontrado: " + filePath);
+        }
+
+        try {
+            // Cargar documento XML
+            SAXBuilder builder = new SAXBuilder();
+            Document document = builder.build(file);
+
+            // Obtener elemento raíz (que ES el <game>)
+            Element gameElement = document.getRootElement();
+
+            // Verificar que sea un elemento <game>
+            if (!"game".equals(gameElement.getName())) {
+                throw new IllegalStateException(
+                        "El archivo no contiene un elemento <game> válido. Encontrado: <" +
+                                gameElement.getName() + ">"
+                );
+            }
+
+            // Convertir a objeto Game
+            return elementToGame(gameElement);
+
+        } catch (JDOMException e) {
+            throw new IOException("Error al parsear el archivo XML: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Verifica si un archivo de partida existe.
+     *
+     * @param filePath Ruta del archivo a verificar
+     * @return true si el archivo existe, false en caso contrario
+     */
+    @Override
+    public boolean exists(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            return false;
+        }
+
+        File file = new File(filePath);
+        return file.exists() && file.isFile();
+    }
+
+    // ==================== MÉTODOS PRIVADOS DE SERIALIZACIÓN ====================
 
     /**
      * Convierte un objeto Game a un elemento XML.
@@ -98,13 +161,13 @@ public class GameRepository implements IGameRepository {
     private Element gameToElement(Game game) {
         Element gameElem = new Element("game");
 
-        // Serializar jugadores (reutilizando el métod0 existente)
+        // Serializar jugadores
         Element player1Elem = playerToElement(game.getPlayer1());
-        player1Elem.setName("player1");  // Renombrar para distinguir
+        player1Elem.setName("player1");
         gameElem.addContent(player1Elem);
 
         Element player2Elem = playerToElement(game.getPlayer2());
-        player2Elem.setName("player2");  // Renombrar para distinguir
+        player2Elem.setName("player2");
         gameElem.addContent(player2Elem);
 
         // Colores asignados
@@ -188,7 +251,7 @@ public class GameRepository implements IGameRepository {
                 rowData.append(cell.name());
 
                 if (col < size - 1) {
-                    rowData.append(",");  // Separador entre celdas
+                    rowData.append(",");
                 }
             }
 
@@ -208,12 +271,12 @@ public class GameRepository implements IGameRepository {
     private Board elementToBoard(Element boardElement) {
         int size = Integer.parseInt(boardElement.getAttributeValue("size"));
 
-        //se crea un tablero vacío (se inicializa con el patrón por defecto)
-        Board board = new Board(size);
+        // Crear un tablero vacío
+        Board board = new Board(size, false);
 
         List<Element> rowElements = boardElement.getChildren("row");
 
-        //sobrescribir las celdas con los valores guardados
+        // Sobrescribir las celdas con los valores guardados
         for (Element rowElem : rowElements) {
             int rowIndex = Integer.parseInt(rowElem.getAttributeValue("index"));
             String rowData = rowElem.getText();
@@ -229,6 +292,7 @@ public class GameRepository implements IGameRepository {
 
         return board;
     }
+
     /**
      * Convierte un objeto Player a un elemento XML.
      *
@@ -239,10 +303,12 @@ public class GameRepository implements IGameRepository {
         Element playerElem = new Element("player");
         playerElem.setAttribute("name", player.getName());
 
-        Element winsElem = new Element("wins").setText(String.valueOf(player.getWins()));
+        Element winsElem = new Element("wins")
+                .setText(String.valueOf(player.getWins()));
         playerElem.addContent(winsElem);
 
-        Element lossesElem = new Element("losses").setText(String.valueOf(player.getLosses()));
+        Element lossesElem = new Element("losses")
+                .setText(String.valueOf(player.getLosses()));
         playerElem.addContent(lossesElem);
 
         return playerElem;
@@ -260,12 +326,5 @@ public class GameRepository implements IGameRepository {
         int losses = Integer.parseInt(playerElement.getChildText("losses"));
 
         return new Player(name, wins, losses);
-    }
-
-    private void saveXml() throws IOException{
-        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-        try (FileOutputStream fos = new FileOutputStream(xmlFile)) {
-            xmlOutputter.output(doc, fos);
-        }
     }
 }

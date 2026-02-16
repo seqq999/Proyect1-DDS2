@@ -15,7 +15,11 @@ public class PlayerController {
     }
 
     public Player registerPlayer(String playerName) throws IOException {
+        if (playerName == null || playerName.isEmpty()) {
+            throw new IllegalArgumentException("Player name cannot be null or empty");
+        }
         Player newP = new Player(playerName);
+        //el metodo save del repo verifica que el jugador no exista antes de guardarlo
         playerRepo.save(newP);
         return newP;
     }
@@ -45,5 +49,34 @@ public class PlayerController {
         }
 
         playerRepo.update(player);
+    }
+
+    public boolean deletePlayer(String name) throws IOException {
+        if(name == null || name.isEmpty()){
+            throw new IllegalArgumentException("Player name is null or empty");
+        }
+        Player player = playerRepo.findByName(name);
+
+        if(player == null){
+            return false;
+        }
+
+        return playerRepo.delete(player);
+    }
+
+    public Player getOrCreatePlayer(String name) throws IOException {
+        if(name == null || name.isEmpty()){
+            throw new IllegalArgumentException("Player name is null or empty");
+        }
+
+        Player existing = playerRepo.findByName(name);
+
+        if(existing != null){
+            return existing;
+        }
+
+        Player newPlayer = new Player(name);
+        playerRepo.save(newPlayer);
+        return newPlayer;
     }
 }

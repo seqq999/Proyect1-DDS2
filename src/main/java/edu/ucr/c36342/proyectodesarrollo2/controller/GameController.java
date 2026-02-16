@@ -18,6 +18,7 @@ public class GameController {
     private Game game;
     private PlayerRepositoryFile playerRepository;
     private GameRepository gameRepository;
+    private PlayerController playerController;
 
     public GameController(PlayerRepositoryFile playerRepository, GameRepository gameRepository) {
         this.playerRepository = playerRepository;
@@ -25,36 +26,80 @@ public class GameController {
     }
 
     public void startNewGame(String player1Name, String player2Name, int boardSize) throws IOException {
-        var player1 = playerRepository.findByName(player1Name);
-        var player2 = playerRepository.findByName(player2Name);
+        if (player1Name == null || player2Name == null || player1Name.isEmpty() || player2Name.isEmpty()) {
+            throw new IllegalArgumentException("Los nombres de los jugadores no pueden ser nulos o vacíos");
+        }
+        Player player1 = playerController.getPlayerByName(player1Name);
+        Player player2 = playerController.getPlayerByName(player2Name);
+
         this.game = new Game(player1, player2, boardSize);
     }
 
-    public GameResult makeMove(int row, int col){
-        // Lógica para realizar un movimiento en el juego
-        // Validar el movimiento, actualizar el estado del juego y determinar el resultado
-        // Retornar el resultado del movimiento (ej. JUGADOR1_GANA, JUGADOR2_GANA, EMPATE, CONTINUA)
+    public GameResult makeMove(int row, int col) throws IOException {
+        if(game == null){
+            throw new IllegalStateException("No se ha iniciado una partida.");
+        }
 
         //todo ver si se hace el movimiento de manera correcta.
-        int size = game.getBoard().getSize();
-        game.getBoard().isValidMove(row, col,game.getCurrentPlayerColor());
-        if(game.getBoard().isValidMove(row, col,game.getCurrentPlayerColor()) == true){
+        //valida si es valido y hace el movimiento
+        if(game.getBoard().isValidMove(row, col,game.getCurrentPlayerColor())){
             game.getBoard().makeMove(row,col,game.getCurrentPlayerColor());
-            return GameResult.SUCCCES;
+            game.switchTurn();
+            //verifica si el siguiente jugador tiene movimientos válidos
+            if (game.getBoard().getValidMoves(game.getCurrentPlayerColor()).isEmpty()) {
+                //si no tiene movimientos, volver a cambiar turno
+                game.switchTurn();
+
+                //verifica si el jugador original tampoco tiene movimientos
+                if (game.getBoard().getValidMoves(game.getCurrentPlayerColor()).isEmpty()) {
+                    //nadie puede jugar = se termina la partida
+                    game.setGameStatus(GameStatus.FINISHED);
+                    endGame();
+                    return GameResult.GAME_OVER;
+                }
+
+                //el jugador original sí puede seguir jugando
+                return GameResult.TURN_SKIPPED;
+            }
+
+            //verifica si el tablero está lleno
+            if (game.getBoard().isFull()) {
+                game.setGameStatus(GameStatus.FINISHED);
+                endGame();
+                return GameResult.GAME_OVER;
+            }
+
+            return GameResult.SUCCESS;
         } else {
             return GameResult.INVALID_MOVE;
         }
-
     }
-
-    public GameResult skipTurn(){
+    public GameResult skipTurn() throws IOException {
         // Lógica para saltar el turno del jugador actual
         // Validar si el jugador puede saltar, actualizar el estado del juego y determinar el resultado
 
         //todo hacer este metodo en la casa :p
 
-        //game.getBoard()
-        return GameResult.TURN_SKIPPED; // Placeholder
+        if(game == null){
+            throw new IllegalStateException("No se ha iniciado una partida.");
+        }
+
+        Board board = game.getBoard();
+        //verifica si el jugador actual tiene movimientos válidos, si no los tiene, cambia el turno. Si el siguiente jugador tampoco tiene movimientos válidos, termina el juego.
+        if(board.getValidMoves(game.getCurrentPlayerColor()).isEmpty()){
+            game.switchTurn();
+            //verifica si el siguiente jugador tiene movimientos válidos, si no los tiene, termina el juego.
+            if(board.getValidMoves(game.getCurrentPlayerColor()).isEmpty()){
+               game.setGameStatus(GameStatus.FINISHED);
+               endGame();
+               return GameResult.GAME_OVER;
+            }
+            //el otro jugador tiene movimientos validos
+            return GameResult.TURN_SKIPPED;
+        } else {
+            return GameResult.NO_VALID_MOVES;
+        }
+
     }
 
     public List<Position> getValidMoves(){
@@ -64,39 +109,35 @@ public class GameController {
     }
 
     public boolean isGameOver(){
-        game.getGameStatus();
-
-        if(game.getGameStatus() == GameStatus.IN_PROGRESS || game.getGameStatus() == GameStatus.NOT_STARTED){
-            game.isInProgress();
-            return false;
-            //todo ver q tiene q retornar aquí
-        } else {
-            game.isFinished();
-            return true;
-
-        }
+        return game.isFinished();
     }
 
     public Player getWinner() throws IOException {
-
-        if(game.getGameStatus() == GameStatus.FINISHED){
-            game.getBoard();
-            //todo revisar la condicion del if
-            //todo revisar la secuencia que pasa dentro del if
-            if(game.getPlayer1Color().compareTo(game.getPlayer2Color()) == 0){
-                game.getPlayer1().incrementWins();
-                game.getPlayer2().incrementLosses();
-                playerRepository.save(game.getPlayer1());
-                playerRepository.save(game.getPlayer2());
-            } else {
-                 game.getPlayer2().incrementWins();
-                 game.getPlayer1().incrementLosses();
-                 playerRepository.save(game.getPlayer1());
-                 playerRepository.save(game.getPlayer2());
-            }
+        if (game == null) {
+            throw new IllegalStateException("No se ha iniciado una partida.");
         }
 
-        return null;
+        int blackCount = game.getBoard().countTokens(Color.BLACK);
+        int whiteCount = game.getBoard().countTokens(Color.WHITE);
+
+        Color winnerColor;
+        if (blackCount > whiteCount) {
+            winnerColor = Color.BLACK;
+        } else if (whiteCount > blackCount) {
+            winnerColor = Color.WHITE;
+        } else {
+            return null; // Empate
+        }
+
+        if(game.getPlayer1Color() == winnerColor){
+            Player winner = game.getPlayer1();
+            playerRepository.update(winner);
+            return winner;
+        } else {
+            Player winner = game.getPlayer2();
+            playerRepository.update(winner);
+            return winner;
+        }
     }
 
     public Player getCurrentPlayer(){return game.getCurrentPlayer();}
@@ -105,19 +146,11 @@ public class GameController {
     public Color getCurrentColor(){return game.getCurrentPlayerColor();}
 
     public int getBlackPieceCount() {
-        int blackPieces = 0;
-        if (game.getPlayer1Color() == Color.BLACK || game.getPlayer2Color() == Color.BLACK) {
-            blackPieces = game.getBoard().countTokens(Color.BLACK);
-        }
-        return blackPieces;
+        return game.getBoard().countTokens(Color.BLACK);
     }
 
     public int getWhitePieceCount(){
-        int whitePieces = 0;
-        if (game.getPlayer1Color() == Color.WHITE || game.getPlayer2Color() == Color.WHITE) {
-            whitePieces = game.getBoard().countTokens(Color.WHITE);
-        }
-        return whitePieces;
+        return game.getBoard().countTokens(Color.WHITE);
     }
 
     public GameResult saveGame(String filePath) throws IOException {
@@ -133,6 +166,55 @@ public class GameController {
         } else {
             throw new IllegalArgumentException("No se puede guardar una partida vacía.");
         }
+    }
+
+    public Board getBoard(){return game.getBoard();}
+
+    public Game getGame(){return game;}
+
+    public boolean isGameStarted(){return game != null;}
+
+    public void resetGame(){
+        if(game != null){
+            game.reset();
+        }
+    }
+
+    public GameResult loadGame(String filePath) throws IOException {
+        if(filePath == null || filePath.isEmpty()){
+            throw new IllegalArgumentException("Invalid file path");
+        }
+
+        Game loadedGame = (Game) gameRepository.load(filePath);
+
+        if(loadedGame != null){
+            this.game = loadedGame;
+            return GameResult.LOAD_SUCCESS;
+        } else {
+            return GameResult.LOAD_ERROR;
+        }
+    }
+
+    public void endGame() throws IOException {
+        if (game == null) {
+            throw new IllegalStateException("No se ha iniciado una partida.");
+        }
+        game.setGameStatus(GameStatus.FINISHED);
+
+        Player winner = getWinner();
+
+        if (winner != null) {
+            //actualizar estadísticas
+            Player loser = (winner == game.getPlayer1()) ? game.getPlayer2() : game.getPlayer1();
+
+            winner.incrementWins();
+            loser.incrementLosses();
+
+            //guardar en repositorio
+            playerRepository.update(winner);
+            playerRepository.update(loser);
+        }
+        //si winner es null, es empate (no actualizar stats)
     }
 
 

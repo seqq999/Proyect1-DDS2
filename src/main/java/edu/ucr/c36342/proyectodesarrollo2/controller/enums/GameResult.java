@@ -1,7 +1,7 @@
 package edu.ucr.c36342.proyectodesarrollo2.controller.enums;
 
 public enum GameResult {
-    SUCCCES,
+    SUCCESS,
     INVALID_MOVE,
     NO_VALID_MOVES,
     TURN_SKIPPED,

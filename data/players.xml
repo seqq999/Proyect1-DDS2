@@ -4,4 +4,12 @@
     <wins>7</wins>
     <losses>3</losses>
   </player>
+  <player name="Santi">
+    <wins>0</wins>
+    <losses>0</losses>
+  </player>
+  <player name="Sebas">
+    <wins>0</wins>
+    <losses>0</losses>
+  </player>
 </players>
