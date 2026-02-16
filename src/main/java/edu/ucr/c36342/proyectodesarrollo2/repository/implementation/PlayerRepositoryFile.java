@@ -1,4 +1,4 @@
-package edu.ucr.c36342.proyectodesarrollo2.repository.impl;
+package edu.ucr.c36342.proyectodesarrollo2.repository.implementation;
 
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
 import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IPlayerRepository;
@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PlayerRepositoryFile implements IPlayerRepository{
 
@@ -23,6 +24,7 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         this.filePath = filePath;
         File file = new File(filePath);
 
+        //crea un directorio si no existe
         File parentDir = file.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             parentDir.mkdirs();
@@ -45,17 +47,25 @@ public class PlayerRepositoryFile implements IPlayerRepository{
 
     @Override
     public void save(Player player) throws IOException {
-        if(player == null){
+        if (player == null) {
             throw new NullPointerException("Player no puede ser null");
         }
-
-        //TODO verificar duplicados
 
         loadDocument();
 
         Element root = doc.getRootElement();
-        Element playerElement = playerToElement(player);
-        root.addContent(playerElement);
+
+        Element existingPlayer = findPlayerElement(player.getName(), root);
+
+        if (existingPlayer != null) {
+            // Ya existe → Actualizar
+            existingPlayer.getChild("wins").setText(String.valueOf(player.getWins()));
+            existingPlayer.getChild("losses").setText(String.valueOf(player.getLosses()));
+        } else {
+            // No existe → Agregar nuevo
+            Element playerElement = playerToElement(player);
+            root.addContent(playerElement);
+        }
 
         saveXml();
     }
@@ -90,6 +100,7 @@ public class PlayerRepositoryFile implements IPlayerRepository{
 
         for(Element playerElem : playerElements){
             players.add(elementToPlayer(playerElem));
+            System.out.println("\n");
         }
 
         return players;
@@ -176,6 +187,39 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         return exists(player.getName());
     }
 
+    /**
+     * Elimina jugadores duplicados, dejando solo el último.
+     */
+    public void removeDuplicates() throws IOException {
+        loadDocument();
+
+        Element root = doc.getRootElement();
+        List<Element> players = root.getChildren("player");
+
+        // Usar un Set para rastrear nombres ya vistos
+        Set<String> seenNames = new HashSet<>();
+        List<Element> toRemove = new ArrayList<>();
+
+        // Recorrer en reversa para mantener el último
+        for (int i = players.size() - 1; i >= 0; i--) {
+            Element playerElem = players.get(i);
+            String name = playerElem.getAttributeValue("name");
+
+            if (seenNames.contains(name)) {
+                toRemove.add(playerElem);  // Es duplicado
+            } else {
+                seenNames.add(name);
+            }
+        }
+
+        // Eliminar duplicados
+        for (Element elem : toRemove) {
+            root.removeContent(elem);
+        }
+
+        saveXml();
+    }
+
     private Element findPlayerElement(String playerName, Element root) {
         if (playerName == null || playerName.trim().isEmpty() || root == null) {
             return null;
@@ -230,10 +274,12 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         return new Player(name, wins, losses);
     }
 
-    private void saveXml() throws IOException{
+    private void saveXml() throws IOException {
         XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
         try (FileOutputStream fos = new FileOutputStream(xmlFile)) {
             xmlOutputter.output(doc, fos);
+        } catch (IOException e) {
+             throw e;
         }
     }
 }

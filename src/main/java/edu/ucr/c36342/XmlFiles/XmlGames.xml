@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<games>
+  <game>
+    <player1 name="Sebas">
+      <wins>0</wins>
+      <losses>0</losses>
+    </player1>
+    <player2 name="Dani">
+      <wins>0</wins>
+      <losses>0</losses>
+    </player2>
+    <player1Color>WHITE</player1Color>
+    <player2Color>BLACK</player2Color>
+    <currentPlayerColor>BLACK</currentPlayerColor>
+    <gameStatus>IN_PROGRESS</gameStatus>
+    <board size="4">
+      <row index="0">EMPTY,EMPTY,EMPTY,EMPTY</row>
+      <row index="1">EMPTY,WHITE,BLACK,EMPTY</row>
+      <row index="2">EMPTY,BLACK,WHITE,EMPTY</row>
+      <row index="3">EMPTY,EMPTY,EMPTY,EMPTY</row>
+    </board>
+  </game>
+  <game>
+    <player1 name="Santi">
+      <wins>0</wins>
+      <losses>0</losses>
+    </player1>
+    <player2 name="Sofi">
+      <wins>0</wins>
+      <losses>0</losses>
+    </player2>
+    <player1Color>BLACK</player1Color>
+    <player2Color>WHITE</player2Color>
+    <currentPlayerColor>BLACK</currentPlayerColor>
+    <gameStatus>IN_PROGRESS</gameStatus>
+    <board size="4">
+      <row index="0">EMPTY,EMPTY,EMPTY,EMPTY</row>
+      <row index="1">EMPTY,WHITE,BLACK,EMPTY</row>
+      <row index="2">EMPTY,BLACK,WHITE,EMPTY</row>
+      <row index="3">EMPTY,EMPTY,EMPTY,EMPTY</row>
+    </board>
+  </game>
+  <game>
+    <player1 name="Santi">
+      <wins>0</wins>
+      <losses>0</losses>
+    </player1>
+    <player2 name="Sebas">
+      <wins>0</wins>
+      <losses>0</losses>
+    </player2>
+    <player1Color>BLACK</player1Color>
+    <player2Color>WHITE</player2Color>
+    <currentPlayerColor>BLACK</currentPlayerColor>
+    <gameStatus>IN_PROGRESS</gameStatus>
+    <board size="4">
+      <row index="0">EMPTY,EMPTY,EMPTY,EMPTY</row>
+      <row index="1">EMPTY,WHITE,BLACK,EMPTY</row>
+      <row index="2">EMPTY,BLACK,WHITE,EMPTY</row>
+      <row index="3">EMPTY,EMPTY,EMPTY,EMPTY</row>
+    </board>
+  </game>
+</games>

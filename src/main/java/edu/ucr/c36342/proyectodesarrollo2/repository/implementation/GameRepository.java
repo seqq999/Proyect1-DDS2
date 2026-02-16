@@ -1,4 +1,4 @@
-package edu.ucr.c36342.proyectodesarrollo2.repository.impl;
+package edu.ucr.c36342.proyectodesarrollo2.repository.implementation;
 
 import edu.ucr.c36342.proyectodesarrollo2.model.Board;
 import edu.ucr.c36342.proyectodesarrollo2.model.Game;
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameRepository implements IGameRepository {
@@ -43,8 +44,8 @@ public class GameRepository implements IGameRepository {
             }
         }
 
-            this.xmlFile = file;
-            loadDocument();
+        this.xmlFile = file;
+        loadDocument();
     }
     @Override
     public void save(Game game, String filePath) throws IOException {
@@ -62,18 +63,17 @@ public class GameRepository implements IGameRepository {
     }
 
     @Override
-    public Game load(String filePath) throws IOException {
+    public List<Game> load(String filePath) throws IOException {
         loadDocument();
 
-        if (xmlFile == null) {
-            throw new NullPointerException("No hay juegos guardados.");
+        List<Game> games = new ArrayList<>();
+        Element root = doc.getRootElement();
+        List<Element> gameElements = root.getChildren("game");
+
+        for(Element gameElement : gameElements){
+            games.add(elementToGame(gameElement));
         }
-
-
-
-
-
-        return null;
+        return games;
     }
 
     @Override

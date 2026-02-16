@@ -1,4 +1,4 @@
-package edu.ucr.c36342.proyectodesarrollo2.repository.impl;
+package edu.ucr.c36342.proyectodesarrollo2.repository.implementation;
 
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
 import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IPlayerRepository;
