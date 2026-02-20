@@ -8,8 +8,8 @@
     <wins>0</wins>
     <losses>0</losses>
   </player2>
-  <player1Color>BLACK</player1Color>
-  <player2Color>WHITE</player2Color>
+  <player1Color>WHITE</player1Color>
+  <player2Color>BLACK</player2Color>
   <currentPlayerColor>BLACK</currentPlayerColor>
   <gameStatus>IN_PROGRESS</gameStatus>
   <board size="8">

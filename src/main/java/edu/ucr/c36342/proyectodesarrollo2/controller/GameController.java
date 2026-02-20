@@ -20,20 +20,35 @@ public class GameController {
     private GameRepository gameRepository;
     private PlayerController playerController;
 
-    public GameController(PlayerRepositoryFile playerRepository, GameRepository gameRepository) {
+    public GameController(PlayerRepositoryFile playerRepository,
+                          GameRepository gameRepository,
+                          PlayerController playerController) {
         this.playerRepository = playerRepository;
         this.gameRepository = gameRepository;
+        this.playerController = playerController;
     }
+
 
     public void startNewGame(String player1Name, String player2Name, int boardSize) throws IOException {
         if (player1Name == null || player2Name == null || player1Name.isEmpty() || player2Name.isEmpty()) {
             throw new IllegalArgumentException("Los nombres de los jugadores no pueden ser nulos o vacíos");
         }
-        Player player1 = playerController.getPlayerByName(player1Name);
-        Player player2 = playerController.getPlayerByName(player2Name);
+
+        if (!playerRepository.exists(player1Name)) {
+            playerRepository.save(new Player(player1Name));
+        }
+
+        if (!playerRepository.exists(player2Name)) {
+            playerRepository.save(new Player(player2Name));
+        }
+
+        Player player1 = playerRepository.findByName(player1Name);
+        Player player2 = playerRepository.findByName(player2Name);
 
         this.game = new Game(player1, player2, boardSize);
     }
+
+
 
     public GameResult makeMove(int row, int col) throws IOException {
         if(game == null){

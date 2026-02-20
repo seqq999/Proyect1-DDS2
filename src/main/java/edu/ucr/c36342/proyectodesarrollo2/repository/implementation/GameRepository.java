@@ -39,7 +39,7 @@ public class GameRepository implements IGameRepository {
      * No requiere configuración inicial.
      */
     public GameRepository() {
-        // No necesita estado interno
+        //no necesita estado interno
     }
 
     /**
@@ -52,6 +52,7 @@ public class GameRepository implements IGameRepository {
      * @throws IllegalArgumentException Si game o filePath son null/vacíos
      * @throws IOException Si hay error al guardar el archivo
      */
+
     @Override
     public void save(Game game, String filePath) throws IOException {
         // Validaciones
