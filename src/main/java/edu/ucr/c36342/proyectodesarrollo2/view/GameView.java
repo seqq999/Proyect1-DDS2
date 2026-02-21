@@ -6,6 +6,8 @@ import edu.ucr.c36342.proyectodesarrollo2.services.SlotBasedSaveSystemService;
 import edu.ucr.c36342.proyectodesarrollo2.view.panels.BoardPanel;
 import edu.ucr.c36342.proyectodesarrollo2.view.panels.StatsPanel;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GameView {
@@ -17,7 +19,7 @@ public class GameView {
     private Label statusLabel;
     private SlotBasedSaveSystemService saveSystem;
     private MenuBar menuBar;
-    private javafx.scene.layout.BorderPane root;
+    private BorderPane root;
 
     public GameView(GameController gameController, PlayerController playerController, BoardPanel boardPanel) {
         this.gameController = gameController;
@@ -26,11 +28,11 @@ public class GameView {
         this.statsPanel = new StatsPanel(gameController);
         this.statusLabel = new Label();
         this.menuBar = new MenuBar();
-        this.root = new javafx.scene.layout.BorderPane();
+        this.root = new BorderPane();
     }
 
     private void initComponents() {
-        javafx.scene.layout.VBox leftPanel = new javafx.scene.layout.VBox(10, statsPanel);
+        VBox leftPanel = new VBox(10, statsPanel);
         leftPanel.setMinWidth(180);
         root.setLeft(leftPanel);
         root.setCenter(boardPanel);
