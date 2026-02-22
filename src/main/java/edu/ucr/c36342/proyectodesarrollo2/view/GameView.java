@@ -41,6 +41,9 @@ public class GameView {
         VBox leftPanel = new VBox(10, statsPanel);
         leftPanel.setMinWidth(180);
         root.setLeft(leftPanel);
+        // Centrar y expandir el BoardPanel
+        BorderPane.setAlignment(boardPanel, javafx.geometry.Pos.CENTER);
+        boardPanel.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         root.setCenter(boardPanel);
         root.setBottom(statusLabel);
         root.setTop(menuBar);
@@ -68,8 +71,13 @@ public class GameView {
 
         Menu showMenu = new Menu("Ver");
         MenuItem showPlayers = new MenuItem("Jugadores");
+        MenuItem deletePlayers = new MenuItem("Eliminar Jugadores");
+
         showPlayers.setOnAction(e -> showPlayersDialog());
+        deletePlayers.setOnAction(e -> showPlayersDialog());
+
         showMenu.getItems().add(showPlayers);
+        showMenu.getItems();
 
         menuBar.getMenus().clear();
         menuBar.getMenus().addAll(gameMenu, showMenu);
@@ -121,6 +129,8 @@ public class GameView {
     private void showPlayersDialog(){
         PlayersDialog dialog = new PlayersDialog(stage, playerController);
         dialog.showDialog();
+        updateStats(); // Actualiza el panel de estadísticas
+        updateStatus("Lista de jugadores actualizada."); // Refleja el cambio en el status
     }
 
     private void exit(){
@@ -140,13 +150,11 @@ public class GameView {
     }
 
     public void refresh(){
-        //todo
         boardPanel.repaint();
         updateStats();
     }
 
     private void showError(String message){
-        //todo
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);
@@ -157,11 +165,26 @@ public class GameView {
     public void show() throws IOException {
         setupMenu();
         initComponents();
-        Scene scene = new Scene(root, 900, 600);
+        Scene scene = new Scene(root, 1000, 700);
         stage.setScene(scene);
         stage.setTitle("Reverse Dots");
         stage.show();
         refresh();
+        boardPanel.repaint();
+        // Listener para adaptar el tamaño del tablero
+        scene.widthProperty().addListener((obs, oldVal, newVal) -> resizeBoardPanel());
+        scene.heightProperty().addListener((obs, oldVal, newVal) -> resizeBoardPanel());
+    }
+
+    private void resizeBoardPanel() {
+        double width = root.getWidth();
+        double height = root.getHeight();
+        double leftPanelWidth = root.getLeft() != null ? root.getLeft().getBoundsInParent().getWidth() : 0;
+        double availableWidth = width - leftPanelWidth;
+        double availableHeight = height - (menuBar.getHeight() + statusLabel.getHeight());
+        double size = Math.min(availableWidth, availableHeight);
+        boardPanel.setPrefSize(size, size);
+        BorderPane.setAlignment(boardPanel, javafx.geometry.Pos.CENTER);
         boardPanel.repaint();
     }
 

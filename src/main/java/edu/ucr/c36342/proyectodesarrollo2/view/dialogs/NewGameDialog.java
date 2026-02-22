@@ -19,6 +19,10 @@ public class NewGameDialog {
     private Spinner<Integer> boardSizeField;
     private DialogResult result;
     private Dialog<ButtonType> dialog;
+    private TextField newPlayer1Field;
+    private Button addPlayer1Button;
+    private TextField newPlayer2Field;
+    private Button addPlayer2Button;
 
     public NewGameDialog(Stage parent, PlayerController playerController) {
         this.stage = parent;
@@ -51,6 +55,16 @@ public class NewGameDialog {
         boardSizeField = new Spinner<>(3, 10, 3);
         boardSizeField.setEditable(true);
 
+        newPlayer1Field = new TextField();
+        newPlayer1Field.setPromptText("Nuevo jugador 1");
+        addPlayer1Button = new Button("Agregar");
+        addPlayer1Button.setOnAction(e -> addNewPlayer(newPlayer1Field, player1Field, player2Field));
+
+        newPlayer2Field = new TextField();
+        newPlayer2Field.setPromptText("Nuevo jugador 2");
+        addPlayer2Button = new Button("Agregar");
+        addPlayer2Button.setOnAction(e -> addNewPlayer(newPlayer2Field, player2Field, player1Field));
+
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -58,8 +72,14 @@ public class NewGameDialog {
 
         grid.add(new Label("Jugador 1:"), 0, 0);
         grid.add(player1Field, 1, 0);
+        grid.add(newPlayer1Field, 2, 0);
+        grid.add(addPlayer1Button, 3, 0);
+
         grid.add(new Label("Jugador 2:"), 0, 1);
         grid.add(player2Field, 1, 1);
+        grid.add(newPlayer2Field, 2, 1);
+        grid.add(addPlayer2Button, 3, 1);
+
         grid.add(new Label("Tamaño del tablero:"), 0, 2);
         grid.add(boardSizeField, 1, 2);
 
@@ -122,5 +142,26 @@ public class NewGameDialog {
         alert.setContentText(message);
         alert.initOwner(stage);
         alert.showAndWait();
+    }
+
+    private void addNewPlayer(TextField inputField, ComboBox<String> targetCombo, ComboBox<String> otherCombo) {
+        String name = inputField.getText().trim();
+        if (name.isEmpty()) {
+            showError("El nombre del jugador no puede estar vacío.");
+            return;
+        }
+        try {
+            Player player = playerController.getOrCreatePlayer(name);
+            if (!targetCombo.getItems().contains(player.getName())) {
+                targetCombo.getItems().add(player.getName());
+            }
+            if (!otherCombo.getItems().contains(player.getName())) {
+                otherCombo.getItems().add(player.getName());
+            }
+            targetCombo.setValue(player.getName()); // Selecciona automáticamente el nuevo jugador
+            inputField.clear();
+        } catch (IOException | IllegalArgumentException e) {
+            showError("Error al agregar jugador: " + e.getMessage());
+        }
     }
 }

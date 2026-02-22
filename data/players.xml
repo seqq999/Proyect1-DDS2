@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <players>
-  <player name="Alice">
-    <wins>7</wins>
-    <losses>3</losses>
-  </player>
-  <player name="Santi">
-    <wins>0</wins>
-    <losses>0</losses>
-  </player>
   <player name="Sebas">
     <wins>0</wins>
+    <losses>1</losses>
+  </player>
+  <player name="dani">
+    <wins>1</wins>
     <losses>0</losses>
   </player>
-  <player name="Bob">
-    <wins>0</wins>
+  <player name="Dani">
+    <wins>1</wins>
     <losses>0</losses>
   </player>
-  <player name="Charlie">
+  <player name="sebas">
     <wins>0</wins>
-    <losses>0</losses>
+    <losses>1</losses>
   </player>
 </players>
