@@ -1,6 +1,7 @@
 package edu.ucr.c36342.proyectodesarrollo2.services;
 
 import edu.ucr.c36342.proyectodesarrollo2.controller.GameController;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.GameLoadException;
 import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.GameRepository;
 
 import java.io.File;
@@ -47,7 +48,7 @@ public class SlotBasedSaveSystemService {
      * @throws IllegalArgumentException Si el slot no está en el rango válido
      * @throws IOException Si el slot está vacío o hay error al cargar
      */
-    public void loadFromSlot(int slotNumber) throws IOException {
+    public void loadFromSlot(int slotNumber) throws IOException, GameLoadException {
         validateSlotNumber(slotNumber);
 
         String filePath = getSlotFilePath(slotNumber);

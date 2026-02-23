@@ -4,19 +4,11 @@
     <wins>1</wins>
     <losses>1</losses>
   </player>
-  <player name="dani">
-    <wins>1</wins>
-    <losses>0</losses>
-  </player>
-  <player name="Dani">
-    <wins>1</wins>
-    <losses>1</losses>
-  </player>
   <player name="sebas">
     <wins>0</wins>
-    <losses>1</losses>
+    <losses>2</losses>
   </player>
-  <player name="jkj">
+  <player name="SeBaD">
     <wins>0</wins>
     <losses>0</losses>
   </player>

@@ -11,8 +11,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 
 public class GameView {
@@ -58,11 +60,7 @@ public class GameView {
 
         newGame.setOnAction(e -> showNewGameDialog());
         loadGame.setOnAction(e -> {
-            try {
-                loadGame();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            loadGame();
         });
         saveGame.setOnAction(e -> saveGame());
         exitGame.setOnAction(e -> exit());
@@ -98,33 +96,65 @@ public class GameView {
         }
     }
 
-    private void loadGame() throws IOException {
+    private void loadGame() {
         try {
-            String slot = setSelectedSlot();
-            if (slot != null) {
-                gameController.loadGame(slot);
-                refresh();
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Cargar partida");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos de partida (*.xml)", "*.xml"));
+
+            File defaultDir = new File(System.getProperty("user.dir"), "saved_games");
+            if (defaultDir.exists()) {
+                fileChooser.setInitialDirectory(defaultDir);
+            }
+
+            File file = fileChooser.showOpenDialog(stage);
+            if (file != null && file.exists()) {
+                gameController.loadGame(file.getAbsolutePath());
+                updateStatus("Partida cargada desde: " + file.getName());
+                refresh(); // Redibuja tablero y stats
             } else {
-                showError("No se seleccionó ningún slot.");
+                updateStatus("Carga cancelada.");
             }
         } catch (Exception e) {
-            showError("Error al cargar el juego: " + e.getMessage());
+            showError("Error al cargar la partida: " + e.getMessage());
         }
     }
 
-    private void saveGame(){
-        try{
-            String slot = setSelectedSlot();
-            if (slot != null) {
-                gameController.saveGame(slot);
-                updateStatus("Juego guardado en " + selectedSlot);
+    private void saveGame() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Guardar partida");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos de partida (*.xml)", "*.xml"));
+
+            // Por comodidad, abre en la carpeta de guardados
+            File defaultDir = new File(System.getProperty("user.dir"), "saved_games");
+            if (defaultDir.exists()) {
+                fileChooser.setInitialDirectory(defaultDir);
+            }
+
+            File file = fileChooser.showSaveDialog(stage); // stage = tu ventana principal
+            if (file != null) {
+                if (file.exists()) {
+                    // Confirmación antes de sobrescribir
+                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirm.setTitle("Confirmar sobreescritura");
+                    confirm.setHeaderText(null);
+                    confirm.setContentText("El archivo ya existe, ¿deseas sobrescribirlo?\n" + file.getName());
+                    var res = confirm.showAndWait();
+                    if (res.isEmpty() || res.get() != ButtonType.OK) {
+                        updateStatus("Guardado cancelado por el usuario.");
+                        return;
+                    }
+                }
+                // Guardar el juego usando el controlador
+                gameController.saveGame(file.getAbsolutePath());
+                updateStatus("Partida guardada en: " + file.getName());
             } else {
-                showError("No se seleccionó ningún slot.");
+                updateStatus("Guardado cancelado.");
             }
         } catch (Exception e) {
-            showError("Error al guardar el juego: " + e.getMessage());
+            showError("Error al guardar la partida: " + e.getMessage());
         }
-
     }
 
     private void showPlayersDialog(){

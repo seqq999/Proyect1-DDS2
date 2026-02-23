@@ -2,6 +2,7 @@ package edu.ucr.c36342.proyectodesarrollo2.view.dialogs;
 
 import edu.ucr.c36342.proyectodesarrollo2.controller.PlayerController;
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -160,7 +161,7 @@ public class NewGameDialog {
             }
             targetCombo.setValue(player.getName()); // Selecciona automáticamente el nuevo jugador
             inputField.clear();
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (IOException | IllegalArgumentException | PlayerNotFoundException e) {
             showError("Error al agregar jugador: " + e.getMessage());
         }
     }
