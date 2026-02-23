@@ -27,7 +27,6 @@ public class GameView {
     private SlotBasedSaveSystemService saveSystem;
     private MenuBar menuBar;
     private BorderPane root;
-    private String selectedSlot = "Seleccione un Slot para continuar"; //mensaje por defecto
 
     public GameView(GameController gameController, PlayerController playerController, BoardPanel boardPanel) {
         this.gameController = gameController;
@@ -82,6 +81,7 @@ public class GameView {
     }
 
     private void showNewGameDialog() {
+       //TODO revisar porq no se crean players nuevos desde la ventana de nuevo juego
         NewGameDialog dialog = new NewGameDialog(stage, playerController);
         var result = dialog.showDialog();
         if (result.isConfirmed()) {
@@ -111,6 +111,7 @@ public class GameView {
             if (file != null && file.exists()) {
                 gameController.loadGame(file.getAbsolutePath());
                 updateStatus("Partida cargada desde: " + file.getName());
+                showMessage("Partida cargada exitosamente desde: " + file.getName());
                 refresh(); // Redibuja tablero y stats
             } else {
                 updateStatus("Carga cancelada.");
@@ -149,6 +150,7 @@ public class GameView {
                 // Guardar el juego usando el controlador
                 gameController.saveGame(file.getAbsolutePath());
                 updateStatus("Partida guardada en: " + file.getName());
+                showMessage("Partida guardada exitosamente en: " + file.getName());
             } else {
                 updateStatus("Guardado cancelado.");
             }
@@ -165,6 +167,7 @@ public class GameView {
     }
 
     private void exit(){
+        showConfirmation("¿Estás seguro de que deseas salir? Se perderán los cambios no guardados.");
         stage.close();
     }
 
@@ -223,19 +226,22 @@ public class GameView {
         this.stage = stage;
     }
 
-    private String setSelectedSlot() {
-        ChoiceDialog<String> slotDialog = new ChoiceDialog<>(selectedSlot, "slot1", "slot2", "slot3", "slot4", "slot5");
-        slotDialog.setTitle("Seleccionar un slot para guardar o cargar el juego");
-        slotDialog.setHeaderText("Elija el slot para guardar o cargar el juego");
-        slotDialog.setContentText("Slot:");
-        var result = slotDialog.showAndWait();
-
-        if (result.isPresent()) {
-            selectedSlot = result.get();
-            return "saved_games/" + selectedSlot + ".xml";
-        } else {
-            // Usuario canceló el diálogo
-            return null;
-        }
+    private void showMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Éxito en el proceso");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.initOwner(stage);
+        alert.showAndWait();
     }
+
+    private void showConfirmation(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmación");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.initOwner(stage);
+        alert.showAndWait();
+    }
+
 }
