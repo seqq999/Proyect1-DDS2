@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <players>
   <player name="Sebas">
-    <wins>0</wins>
+    <wins>1</wins>
     <losses>1</losses>
   </player>
   <player name="dani">
@@ -10,10 +10,14 @@
   </player>
   <player name="Dani">
     <wins>1</wins>
-    <losses>0</losses>
+    <losses>1</losses>
   </player>
   <player name="sebas">
     <wins>0</wins>
     <losses>1</losses>
+  </player>
+  <player name="jkj">
+    <wins>0</wins>
+    <losses>0</losses>
   </player>
 </players>

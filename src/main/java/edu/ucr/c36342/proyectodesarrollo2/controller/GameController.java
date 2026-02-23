@@ -5,9 +5,10 @@ import edu.ucr.c36342.proyectodesarrollo2.model.Board;
 import edu.ucr.c36342.proyectodesarrollo2.model.Game;
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
 import edu.ucr.c36342.proyectodesarrollo2.model.Position;
-import edu.ucr.c36342.proyectodesarrollo2.model.enums.CellState;
 import edu.ucr.c36342.proyectodesarrollo2.model.enums.Color;
 import edu.ucr.c36342.proyectodesarrollo2.model.enums.GameStatus;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.GameLoadException;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
 import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.GameRepository;
 import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.PlayerRepositoryFile;
 
@@ -29,7 +30,7 @@ public class GameController {
     }
 
 
-    public void startNewGame(String player1Name, String player2Name, int boardSize) throws IOException {
+    public void startNewGame(String player1Name, String player2Name, int boardSize) throws IOException, PlayerNotFoundException {
         if (player1Name == null || player2Name == null || player1Name.isEmpty() || player2Name.isEmpty()) {
             throw new IllegalArgumentException("Los nombres de los jugadores no pueden ser nulos o vacíos");
         }
@@ -118,8 +119,6 @@ public class GameController {
     }
 
     public List<Position> getValidMoves(){
-        // Lógica para obtener la lista de movimientos válidos para el jugador actual
-        //todo revisar si esto le muestra al jugador los movimientos disponibles
         return game.getBoard().getValidMoves(game.getCurrentPlayerColor()); // Placeholder
     }
 
@@ -160,11 +159,11 @@ public class GameController {
 
     public Color getCurrentColor(){return game.getCurrentPlayerColor();}
 
-    public int getBlackPieceCount() {
+    public int getBlackTokensCount() {
         return game.getBoard().countTokens(Color.BLACK);
     }
 
-    public int getWhitePieceCount(){
+    public int getWhiteTokensCount(){
         return game.getBoard().countTokens(Color.WHITE);
     }
 
@@ -195,7 +194,7 @@ public class GameController {
         }
     }
 
-    public GameResult loadGame(String filePath) throws IOException {
+    public GameResult loadGame(String filePath) throws IOException, GameLoadException {
         if(filePath == null || filePath.isEmpty()){
             throw new IllegalArgumentException("Invalid file path");
         }

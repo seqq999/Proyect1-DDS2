@@ -2,6 +2,7 @@ package edu.ucr.c36342.proyectodesarrollo2.view.dialogs;
 
 import edu.ucr.c36342.proyectodesarrollo2.controller.PlayerController;
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -141,6 +142,8 @@ public class PlayersDialog {
             }
         } catch (IOException e) {
             showError("Error al eliminar el jugador: " + e.getMessage());
+        } catch (PlayerNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 

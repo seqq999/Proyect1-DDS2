@@ -1,6 +1,7 @@
 package edu.ucr.c36342.proyectodesarrollo2.repository.implementation;
 
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
 import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IPlayerRepository;
 
 import java.io.IOException;
@@ -24,13 +25,15 @@ public class InMemoryPlayerRepository implements IPlayerRepository {
     }
 
     @Override
-    public Player findByName(String name) throws IOException {
+    public Player findByName(String name) throws IOException, PlayerNotFoundException {
         if(name == null || name.isEmpty()) {
-            throw new IllegalArgumentException("El nombre del jugador no puede ser null o vacío");
+            throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
         }
-
-        //devuelve null si el jugador no existe
-        return playerMap.get(name);
+        Player player = playerMap.get(name);
+        if (player == null) {
+            throw new PlayerNotFoundException("No se encontró el jugador: " + name);
+        }
+        return player;
     }
 
     @Override

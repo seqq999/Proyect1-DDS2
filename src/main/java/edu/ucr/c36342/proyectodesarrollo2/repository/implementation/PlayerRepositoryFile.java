@@ -1,6 +1,7 @@
 package edu.ucr.c36342.proyectodesarrollo2.repository.implementation;
 
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
 import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IPlayerRepository;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -71,9 +72,9 @@ public class PlayerRepositoryFile implements IPlayerRepository{
     }
 
     @Override
-    public Player findByName(String name) throws IOException {
+    public Player findByName(String name) throws IOException, PlayerNotFoundException {
         if(name == null || name.isEmpty()){
-            throw new IllegalArgumentException("El nombre del jugador no puede ser null o vacío");
+            throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
         }
 
         loadDocument();
@@ -82,12 +83,11 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         List<Element> players = root.getChildren("player");
 
         for(Element playerElem : players){
-            String nameElem = playerElem.getAttributeValue("name");
             if(playerElem.getAttributeValue("name").equals(name)){
                 return elementToPlayer(playerElem);//si se encuentra el jugador, se convierte el elemento XML a un objeto Player y se retorna
             }
         }
-        return null; //si no se encuentra el jugador, se retorna null
+        throw new PlayerNotFoundException("No se encontró el jugador: " + name);
     }
 
     @Override

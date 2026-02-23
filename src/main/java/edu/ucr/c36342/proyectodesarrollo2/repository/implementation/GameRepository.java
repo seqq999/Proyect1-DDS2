@@ -6,6 +6,7 @@ import edu.ucr.c36342.proyectodesarrollo2.model.Player;
 import edu.ucr.c36342.proyectodesarrollo2.model.enums.CellState;
 import edu.ucr.c36342.proyectodesarrollo2.model.enums.Color;
 import edu.ucr.c36342.proyectodesarrollo2.model.enums.GameStatus;
+import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.GameLoadException;
 import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IGameRepository;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -100,15 +101,15 @@ public class GameRepository implements IGameRepository {
      * @throws IOException Si hay error al leer o parsear el archivo
      */
     @Override
-    public Game load(String filePath) throws IOException {
+    public Game load(String filePath) throws GameLoadException, IOException {
         // Validaciones
         if (filePath == null || filePath.trim().isEmpty()) {
-            throw new IllegalArgumentException("FilePath no puede ser null o vacío");
+            throw new IllegalArgumentException("La ruta del archivo no puede ser nula o vacía");
         }
 
         File file = new File(filePath);
         if (!file.exists()) {
-            throw new FileNotFoundException("Archivo no encontrado: " + filePath);
+            throw new GameLoadException("Archivo de partida no encontrado: " + filePath);
         }
 
         try {
@@ -121,7 +122,7 @@ public class GameRepository implements IGameRepository {
 
             // Verificar que sea un elemento <game>
             if (!"game".equals(gameElement.getName())) {
-                throw new IllegalStateException(
+                throw new GameLoadException(
                         "El archivo no contiene un elemento <game> válido. Encontrado: <" +
                                 gameElement.getName() + ">"
                 );
@@ -131,7 +132,11 @@ public class GameRepository implements IGameRepository {
             return elementToGame(gameElement);
 
         } catch (JDOMException e) {
-            throw new IOException("Error al parsear el archivo XML: " + e.getMessage(), e);
+            throw new GameLoadException("Error al parsear el archivo XML: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new GameLoadException("Error de IO al cargar la partida: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw new GameLoadException("Error inesperado al cargar la partida: " + e.getMessage(), e);
         }
     }
 

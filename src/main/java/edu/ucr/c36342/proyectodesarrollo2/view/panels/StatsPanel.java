@@ -39,12 +39,12 @@ public class StatsPanel extends VBox {
         Label title = new Label("Estadísticas");
         title.setFont(Font.font("System", FontWeight.BOLD, 14));
 
-        player1Label     = new Label("Jugador 1: -");
-        player2Label     = new Label("Jugador 2: -");
+        player1Label = new Label("Jugador 1: -");
+        player2Label = new Label("Jugador 2: -");
         player1ColorLabel = new Label("Color J1: -");
         player2ColorLabel = new Label("Color J2: -");
-        countLabel       = new Label("Piezas: ⚫ 0  |  ⚪ 0");
-        turnLabel        = new Label("Turno: -");
+        countLabel = new Label("Piezas: ⚫ 0  |  ⚪ 0");
+        turnLabel = new Label("Turno: -");
         turnLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
 
         this.getChildren().addAll(
@@ -63,12 +63,12 @@ public class StatsPanel extends VBox {
             return;
         }
 
-        String p1Name  = gameController.getGame().getPlayer1().getName();
-        String p2Name  = gameController.getGame().getPlayer2().getName();
-        Color p1Color  = gameController.getGame().getPlayer1Color();
-        Color p2Color  = gameController.getGame().getPlayer2Color();
-        int blackCount = gameController.getBlackPieceCount();
-        int whiteCount = gameController.getWhitePieceCount();
+        String p1Name = gameController.getGame().getPlayer1().getName();
+        String p2Name = gameController.getGame().getPlayer2().getName();
+        Color p1Color = gameController.getGame().getPlayer1Color();
+        Color p2Color = gameController.getGame().getPlayer2Color();
+        int blackCount = gameController.getBlackTokensCount();
+        int whiteCount = gameController.getWhiteTokensCount();
         String currentName = gameController.getCurrentPlayer().getName();
 
         player1Label.setText("Jugador 1: " + p1Name);

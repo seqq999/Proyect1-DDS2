@@ -4,7 +4,6 @@ import edu.ucr.c36342.proyectodesarrollo2.controller.GameController;
 import edu.ucr.c36342.proyectodesarrollo2.controller.enums.GameResult;
 import edu.ucr.c36342.proyectodesarrollo2.model.Position;
 import edu.ucr.c36342.proyectodesarrollo2.model.enums.CellState;
-import edu.ucr.c36342.proyectodesarrollo2.model.enums.Color;
 import edu.ucr.c36342.proyectodesarrollo2.view.GameView;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
@@ -25,11 +24,11 @@ public class BoardPanel extends Pane {
     private int cellSize = 60;
 
     // Colores del tablero (JavaFX Paint)
-    private static final Paint EMPTY_COLOR      = javafx.scene.paint.Color.web("#2E7D32");  // verde oscuro
-    private static final Paint BLACK_COLOR      = javafx.scene.paint.Color.BLACK;
-    private static final Paint WHITE_COLOR      = javafx.scene.paint.Color.WHITE;
+    private static final Paint EMPTY_COLOR = javafx.scene.paint.Color.web("#2E7D32");  // verde oscuro
+    private static final Paint BLACK_COLOR = javafx.scene.paint.Color.BLACK;
+    private static final Paint WHITE_COLOR = javafx.scene.paint.Color.WHITE;
     private static final Paint VALID_MOVE_COLOR = javafx.scene.paint.Color.web("#A5D6A7AA"); // verde claro semitransparente
-    private static final Paint GRID_COLOR       = javafx.scene.paint.Color.web("#1B5E20");  // verde más oscuro para líneas
+    private static final Paint GRID_COLOR = javafx.scene.paint.Color.web("#1B5E20");  // verde más oscuro para líneas
 
     public BoardPanel(GameController gameController, GameView parent) {
         this.gameController = gameController;
@@ -186,8 +185,8 @@ public class BoardPanel extends Pane {
             String message;
             var winner = gameController.getWinner();
             if (winner != null) {
-                int black = gameController.getBlackPieceCount();
-                int white = gameController.getWhitePieceCount();
+                int black = gameController.getBlackTokensCount();
+                int white = gameController.getWhiteTokensCount();
                 message = "¡Juego terminado!\nGanador: " + winner.getName()
                         + "\n⚫ Negro: " + black + "  |  ⚪ Blanco: " + white;
             } else {

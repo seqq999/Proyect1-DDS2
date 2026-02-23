@@ -25,7 +25,7 @@ public class GameView {
     private SlotBasedSaveSystemService saveSystem;
     private MenuBar menuBar;
     private BorderPane root;
-    private String selectedSlot = "slot1"; // Valor por defecto
+    private String selectedSlot = "Seleccione un Slot para continuar"; //mensaje por defecto
 
     public GameView(GameController gameController, PlayerController playerController, BoardPanel boardPanel) {
         this.gameController = gameController;
@@ -103,6 +103,7 @@ public class GameView {
             String slot = setSelectedSlot();
             if (slot != null) {
                 gameController.loadGame(slot);
+                refresh();
             } else {
                 showError("No se seleccionó ningún slot.");
             }

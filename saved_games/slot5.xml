@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <game>
-  <player1 name="Alice">
-    <wins>7</wins>
-    <losses>3</losses>
-  </player1>
-  <player2 name="Bob">
+  <player1 name="sebas">
     <wins>0</wins>
-    <losses>0</losses>
+    <losses>1</losses>
+  </player1>
+  <player2 name="Dani">
+    <wins>1</wins>
+    <losses>1</losses>
   </player2>
   <player1Color>BLACK</player1Color>
   <player2Color>WHITE</player2Color>
   <currentPlayerColor>BLACK</currentPlayerColor>
   <gameStatus>IN_PROGRESS</gameStatus>
-  <board size="8">
-    <row index="0">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
-    <row index="1">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
-    <row index="2">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
-    <row index="3">EMPTY,EMPTY,EMPTY,WHITE,BLACK,EMPTY,EMPTY,EMPTY</row>
-    <row index="4">EMPTY,EMPTY,EMPTY,BLACK,WHITE,EMPTY,EMPTY,EMPTY</row>
-    <row index="5">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
-    <row index="6">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
-    <row index="7">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
+  <board size="4">
+    <row index="0">EMPTY,EMPTY,EMPTY,EMPTY</row>
+    <row index="1">EMPTY,WHITE,BLACK,EMPTY</row>
+    <row index="2">EMPTY,WHITE,BLACK,BLACK</row>
+    <row index="3">EMPTY,WHITE,EMPTY,EMPTY</row>
   </board>
 </game>
