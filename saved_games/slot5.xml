@@ -15,8 +15,8 @@
   <board size="6">
     <row index="0">EMPTY,WHITE,BLACK,EMPTY,EMPTY,EMPTY</row>
     <row index="1">EMPTY,EMPTY,BLACK,EMPTY,WHITE,EMPTY</row>
-    <row index="2">EMPTY,EMPTY,BLACK,WHITE,BLACK,BLACK</row>
-    <row index="3">EMPTY,EMPTY,BLACK,BLACK,EMPTY,EMPTY</row>
+    <row index="2">EMPTY,BLACK,WHITE,WHITE,BLACK,BLACK</row>
+    <row index="3">BLACK,EMPTY,BLACK,BLACK,EMPTY,EMPTY</row>
     <row index="4">EMPTY,EMPTY,BLACK,BLACK,EMPTY,EMPTY</row>
     <row index="5">EMPTY,BLACK,EMPTY,EMPTY,EMPTY,EMPTY</row>
   </board>

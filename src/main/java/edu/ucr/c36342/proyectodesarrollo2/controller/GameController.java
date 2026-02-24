@@ -203,6 +203,14 @@ public class GameController {
         //si winner es null, es empate (no actualizar stats)
     }
 
+    /**
+     * Setter para el objeto Game, solo para pruebas unitarias.
+     * @param game instancia de Game a usar en el controlador
+     */
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
 
 
 

@@ -2,7 +2,6 @@ package edu.ucr.c36342.proyectodesarrollo2.view;
 
 import edu.ucr.c36342.proyectodesarrollo2.controller.GameController;
 import edu.ucr.c36342.proyectodesarrollo2.controller.PlayerController;
-import edu.ucr.c36342.proyectodesarrollo2.services.SlotBasedSaveSystemService;
 import edu.ucr.c36342.proyectodesarrollo2.view.dialogs.NewGameDialog;
 import edu.ucr.c36342.proyectodesarrollo2.view.dialogs.PlayersDialog;
 import edu.ucr.c36342.proyectodesarrollo2.view.panels.BoardPanel;
@@ -24,7 +23,6 @@ public class GameView {
     private BoardPanel boardPanel;
     private StatsPanel statsPanel;
     private Label statusLabel;
-    private SlotBasedSaveSystemService saveSystem;
     private MenuBar menuBar;
     private BorderPane root;
 
