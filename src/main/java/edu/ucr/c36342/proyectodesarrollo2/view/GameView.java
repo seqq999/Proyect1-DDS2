@@ -68,10 +68,8 @@ public class GameView {
 
         Menu showMenu = new Menu("Ver");
         MenuItem showPlayers = new MenuItem("Jugadores");
-        MenuItem deletePlayers = new MenuItem("Eliminar Jugadores");
 
         showPlayers.setOnAction(e -> showPlayersDialog());
-        deletePlayers.setOnAction(e -> showPlayersDialog());
 
         showMenu.getItems().add(showPlayers);
         showMenu.getItems();
@@ -81,7 +79,6 @@ public class GameView {
     }
 
     private void showNewGameDialog() {
-       //TODO revisar porq no se crean players nuevos desde la ventana de nuevo juego
         NewGameDialog dialog = new NewGameDialog(stage, playerController);
         var result = dialog.showDialog();
         if (result.isConfirmed()) {

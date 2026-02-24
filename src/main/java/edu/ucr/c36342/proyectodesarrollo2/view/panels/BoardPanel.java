@@ -36,7 +36,7 @@ public class BoardPanel extends Pane {
         initCanvas();
     }
 
-    /** Redibuja todo el tablero. Llamar cada vez que cambie el estado del juego. */
+    /** Redibuja el tablero. Llamar cada vez que cambie el estado del juego. */
     public void repaint() {
         if (!gameController.isGameStarted()) return;
         drawBoard();

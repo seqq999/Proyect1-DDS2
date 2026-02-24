@@ -41,7 +41,7 @@ public class Board {
         this.size = size;
         cells = new CellState[size][size];
 
-        // Llenar todo de EMPTY
+        // Llena t0do de EMPTY
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 cells[i][j] = CellState.EMPTY;

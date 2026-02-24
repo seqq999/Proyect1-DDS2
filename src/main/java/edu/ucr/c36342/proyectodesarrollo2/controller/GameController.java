@@ -56,7 +56,6 @@ public class GameController {
             throw new IllegalStateException("No se ha iniciado una partida.");
         }
 
-        //todo ver si se hace el movimiento de manera correcta.
         //valida si es valido y hace el movimiento
         if(game.getBoard().isValidMove(row, col,game.getCurrentPlayerColor())){
             game.getBoard().makeMove(row,col,game.getCurrentPlayerColor());
@@ -89,33 +88,6 @@ public class GameController {
         } else {
             return GameResult.INVALID_MOVE;
         }
-    }
-    public GameResult skipTurn() throws IOException {
-        // Lógica para saltar el turno del jugador actual
-        // Validar si el jugador puede saltar, actualizar el estado del juego y determinar el resultado
-
-        //todo hacer este metodo en la casa :p
-
-        if(game == null){
-            throw new IllegalStateException("No se ha iniciado una partida.");
-        }
-
-        Board board = game.getBoard();
-        //verifica si el jugador actual tiene movimientos válidos, si no los tiene, cambia el turno. Si el siguiente jugador tampoco tiene movimientos válidos, termina el juego.
-        if(board.getValidMoves(game.getCurrentPlayerColor()).isEmpty()){
-            game.switchTurn();
-            //verifica si el siguiente jugador tiene movimientos válidos, si no los tiene, termina el juego.
-            if(board.getValidMoves(game.getCurrentPlayerColor()).isEmpty()){
-               game.setGameStatus(GameStatus.FINISHED);
-               endGame();
-               return GameResult.GAME_OVER;
-            }
-            //el otro jugador tiene movimientos validos
-            return GameResult.TURN_SKIPPED;
-        } else {
-            return GameResult.NO_VALID_MOVES;
-        }
-
     }
 
     public List<Position> getValidMoves(){

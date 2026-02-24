@@ -71,18 +71,25 @@ public class PlayerController {
      * @throws IOException
      */
     public Player getOrCreatePlayer(String name) throws IOException, PlayerNotFoundException {
-        if(name == null || name.isEmpty()){
+        if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
         }
 
-        Player existing = playerRepo.findByName(name);
+        boolean exists = playerRepo.exists(name);
 
-        if(existing != null){
+        Player existing = null;
+        if (exists == true) {
+            existing = playerRepo.findByName(name);
             return existing;
         }
 
-        Player newPlayer = new Player(name);
-        playerRepo.save(newPlayer);
-        return newPlayer;
+
+        if (existing != null) {
+            return existing;
+        } else {
+            Player newP = new Player(name);
+            playerRepo.save(newP);
+            return newP;
+        }
     }
 }

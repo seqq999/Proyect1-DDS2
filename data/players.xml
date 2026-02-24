@@ -14,6 +14,10 @@
   </player>
   <player name="Dani">
     <wins>0</wins>
+    <losses>1</losses>
+  </player>
+  <player name="santi">
+    <wins>1</wins>
     <losses>0</losses>
   </player>
 </players>

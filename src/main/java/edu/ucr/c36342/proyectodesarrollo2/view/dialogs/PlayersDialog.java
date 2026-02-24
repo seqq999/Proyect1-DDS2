@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Diálogo para mostrar y gestionar jugadores registrados.
+ */
 public class PlayersDialog {
     private Stage stage;
     private PlayerController playerController;
@@ -26,7 +29,6 @@ public class PlayersDialog {
     private Dialog<ButtonType> dialog;
     private Button createButton;
     private Button deleteButton;
-    private Button updateButton;
     private TextField createPlayerField;
 
     public PlayersDialog(Stage parent, PlayerController playerController) {
@@ -67,17 +69,16 @@ public class PlayersDialog {
 
         deleteButton = new Button("Eliminar jugador");
         deleteButton.setDisable(true);
-        deleteButton.setOnAction(event -> handleDeletePlayer());
+        deleteButton.setOnAction(e -> handleDeletePlayer());
 
-        updateButton = new Button("Actualizar jugador");
-        updateButton.setDisable(true);
-        updateButton.setOnAction(event -> handleUpdatePlayer());
-
-        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> deleteButton.setDisable(newValue == null));
+        tableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            boolean selected = newValue != null;
+            deleteButton.setDisable(!selected);
+        });
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(10));
-        content.getChildren().addAll(tableView, createPlayerField, createButton, deleteButton, updateButton);
+        content.getChildren().addAll(tableView, createPlayerField, createButton, deleteButton);
 
         dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().setPrefSize(1000, 700);
@@ -143,27 +144,7 @@ public class PlayersDialog {
         } catch (IOException e) {
             showError("Error al eliminar el jugador: " + e.getMessage());
         } catch (PlayerNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void handleUpdatePlayer(){
-        Player selected = tableView.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showError("Selecciona un jugador para eliminar.");
-            return;
-        }
-
-        try{
-            boolean updated = playerController.updatePlayerStats(selected);
-            if(updated){
-                loadPlayers();
-            } else {
-                showError("No se pudo actualizar el jugador: " + selected.getName());
-            }
-
-        } catch (IOException e){
-                showError("Error al actualizar el jugador: " + e.getMessage());
+            showError("Jugador no encontrado: " + selected.getName());
         }
     }
 
@@ -175,4 +156,6 @@ public class PlayersDialog {
         alert.initOwner(stage);
         alert.showAndWait();
     }
+
+
 }
