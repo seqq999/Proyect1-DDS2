@@ -12,6 +12,7 @@ import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundEx
 import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.GameRepository;
 import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.PlayerRepositoryFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class GameController {
     private PlayerRepositoryFile playerRepository;
     private GameRepository gameRepository;
     private PlayerController playerController;
+    // Ruta del archivo de la partida cargada (si aplica)
+    private String currentGameFilePath;
 
     public GameController(PlayerRepositoryFile playerRepository,
                           GameRepository gameRepository,
@@ -175,6 +178,7 @@ public class GameController {
 
         if(loadedGame != null){
             this.game = loadedGame;
+            this.currentGameFilePath = filePath; // Guardar la ruta del archivo cargado
             return GameResult.LOAD_SUCCESS;
         } else {
             return GameResult.LOAD_ERROR;
@@ -201,6 +205,15 @@ public class GameController {
             playerRepository.update(loser);
         }
         //si winner es null, es empate (no actualizar stats)
+
+        //si la partida fue cargada desde archivo, eliminar el archivo al finalizar
+        if (currentGameFilePath != null) {
+            File file = new File(currentGameFilePath);
+            if (file.exists()) {
+                file.delete();
+            }
+            currentGameFilePath = null;
+        }
     }
 
     /**

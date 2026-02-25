@@ -2,7 +2,7 @@
 <players>
   <player name="Sebas">
     <wins>1</wins>
-    <losses>1</losses>
+    <losses>2</losses>
   </player>
   <player name="sebas">
     <wins>0</wins>
@@ -13,7 +13,7 @@
     <losses>0</losses>
   </player>
   <player name="Dani">
-    <wins>0</wins>
+    <wins>1</wins>
     <losses>1</losses>
   </player>
   <player name="santi">
@@ -26,6 +26,10 @@
   </player>
   <player name="Juan">
     <wins>0</wins>
+    <losses>1</losses>
+  </player>
+  <player name="kkkkkk">
+    <wins>1</wins>
     <losses>0</losses>
   </player>
 </players>
