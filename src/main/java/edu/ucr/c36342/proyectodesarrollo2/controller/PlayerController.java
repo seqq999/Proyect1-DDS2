@@ -1,7 +1,7 @@
 package edu.ucr.c36342.proyectodesarrollo2.controller;
 
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
-import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.PlayerRepositoryFile;
+import edu.ucr.c36342.proyectodesarrollo2.repository.interfaces.IPlayerRepository;
 import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
 
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.util.List;
 
 public class PlayerController {
 
-    private PlayerRepositoryFile playerRepo;
+    private IPlayerRepository playerRepo;
 
-    public PlayerController(PlayerRepositoryFile playerRepo) {
+    public PlayerController(IPlayerRepository playerRepo) {
         this.playerRepo = playerRepo;
     }
 

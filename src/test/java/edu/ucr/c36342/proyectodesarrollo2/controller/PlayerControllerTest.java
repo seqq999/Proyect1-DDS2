@@ -3,31 +3,39 @@ package edu.ucr.c36342.proyectodesarrollo2.controller;
 import edu.ucr.c36342.proyectodesarrollo2.model.Player;
 import edu.ucr.c36342.proyectodesarrollo2.repository.implementation.PlayerRepositoryFile;
 import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-class
-PlayerControllerTest {
+class PlayerControllerTest {
     private PlayerRepositoryFile playerRepo;
     private PlayerController playerController;
+    private String filePath = "data/playersTests.xml";
 
     @BeforeEach
-    void setUp() {
-        playerRepo = mock(PlayerRepositoryFile.class);
+    void setUp() throws IOException {
+        playerRepo = new PlayerRepositoryFile(filePath);
         playerController = new PlayerController(playerRepo);
     }
+//    @AfterEach
+//    void tearDown() throws IOException {
+//        // Borra el archivo de jugadores después de cada test para evitar interferencias
+//        Files.deleteIfExists(Paths.get(filePath));
+//    }
 
     @Test
-    void testRegisterPlayerSuccess() throws IOException {
-        doNothing().when(playerRepo).save(any(Player.class));
+    void testRegisterPlayerSuccess() throws IOException, PlayerNotFoundException {
         assertTrue(playerController.registerPlayer("Juan"));
+        Player p = playerController.getPlayerByName("Juan");
+        assertNotNull(p);
+        assertEquals("Juan", p.getName());
     }
 
     @Test
@@ -37,9 +45,10 @@ PlayerControllerTest {
 
     @Test
     void testGetPlayerByNameSuccess() throws IOException, PlayerNotFoundException {
-        Player p = new Player("Ana");
-        when(playerRepo.findByName("Ana")).thenReturn(p);
-        assertEquals(p, playerController.getPlayerByName("Ana"));
+        playerController.registerPlayer("Ana");
+        Player p = playerController.getPlayerByName("Ana");
+        assertNotNull(p);
+        assertEquals("Ana", p.getName());
     }
 
     @Test
@@ -49,30 +58,35 @@ PlayerControllerTest {
 
     @Test
     void testGetAllPlayersReturnsList() throws IOException {
-        List<Player> players = Arrays.asList(new Player("A"), new Player("B"));
-        when(playerRepo.findAll()).thenReturn(players);
-        assertEquals(players, playerController.getAllPlayers());
+        playerController.registerPlayer("A");
+        playerController.registerPlayer("B");
+        List<Player> players = playerController.getAllPlayers();
+        assertTrue(players.stream().anyMatch(p -> p.getName().equals("A")));
+        assertTrue(players.stream().anyMatch(p -> p.getName().equals("B")));
     }
 
     @Test
     void testPlayerExistsTrue() throws IOException {
-        when(playerRepo.exists("Pedro")).thenReturn(true);
+        playerController.registerPlayer("Pedro");
         assertTrue(playerController.playerExists("Pedro"));
     }
 
     @Test
-    void testUpdatePlayerStatsSuccess() throws IOException {
-        Player p = new Player("Luis");
-        doNothing().when(playerRepo).update(p);
+    void testUpdatePlayerStatsSuccess() throws IOException, PlayerNotFoundException {
+        playerController.registerPlayer("Luis");
+        Player p = playerController.getPlayerByName("Luis");
+        p.incrementWins();
         assertTrue(playerController.updatePlayerStats(p));
+        Player updated = playerController.getPlayerByName("Luis");
+        assertEquals(1, updated.getWins());
     }
 
     @Test
     void testDeletePlayerSuccess() throws IOException, PlayerNotFoundException {
-        Player p = new Player("Carlos");
-        when(playerRepo.findByName("Carlos")).thenReturn(p);
-        when(playerRepo.delete(p)).thenReturn(true);
+        playerController.registerPlayer("Carlos");
         assertTrue(playerController.deletePlayer("Carlos"));
+        assertThrows(PlayerNotFoundException.class, () -> playerController.getPlayerByName("Carlos"));
     }
-}
 
+
+}
