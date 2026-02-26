@@ -8,7 +8,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -108,22 +107,22 @@ public class PlayersDialog {
         }
     }
 
-    private void handleCreatePlayer(){
+    private void handleCreatePlayer() {
         String newName = createPlayerField.getText().trim();
-        if(newName.isEmpty()){
+        if (newName.isEmpty()) {
             showError("El nombre del jugador no puede estar vacío.");
             return;
         }
 
-        try{
+        try {
             boolean created = playerController.registerPlayer(newName);
-            if(created){
+            if (created) {
                 loadPlayers();
                 createPlayerField.clear();
             } else {
                 showError("No se pudo crear el jugador: " + newName);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             showError("Error al crear el jugador: " + e.getMessage());
         }
     }
