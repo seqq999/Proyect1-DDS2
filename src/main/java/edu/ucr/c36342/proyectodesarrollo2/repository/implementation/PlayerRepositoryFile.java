@@ -116,6 +116,7 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         List<Element> players = root.getChildren("player");
         for(Element playerElem : players){
             if(playerElem.getAttributeValue("name").equals(player.getName())){
+                // Sobrescribir los valores
                 playerElem.getChild("wins").setText(String.valueOf(player.getWins()));
                 playerElem.getChild("losses").setText(String.valueOf(player.getLosses()));
                 try {

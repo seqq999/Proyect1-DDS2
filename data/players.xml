@@ -1,34 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <players>
   <player name="Sebas">
-    <wins>1</wins>
-    <losses>2</losses>
+    <wins>14</wins>
+    <losses>17</losses>
   </player>
   <player name="sebas">
     <wins>0</wins>
     <losses>2</losses>
   </player>
-  <player name="SeBaD">
-    <wins>0</wins>
-    <losses>0</losses>
-  </player>
   <player name="Dani">
-    <wins>1</wins>
-    <losses>1</losses>
+    <wins>10</wins>
+    <losses>6</losses>
   </player>
   <player name="santi">
-    <wins>1</wins>
-    <losses>0</losses>
-  </player>
-  <player name="xzz">
-    <wins>0</wins>
-    <losses>0</losses>
-  </player>
-  <player name="Juan">
-    <wins>0</wins>
-    <losses>1</losses>
-  </player>
-  <player name="kkkkkk">
     <wins>1</wins>
     <losses>0</losses>
   </player>

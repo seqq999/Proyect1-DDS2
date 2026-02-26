@@ -133,6 +133,7 @@ public class PlayersDialog {
             showError("Selecciona un jugador para eliminar.");
             return;
         }
+        showConfirmation("¿Estás seguro de que deseas eliminar al jugador: " + selected.getName() + "? Esta acción no se puede deshacer.");
         try {
             boolean deleted = playerController.deletePlayer(selected.getName());
             if (deleted) {
@@ -150,6 +151,15 @@ public class PlayersDialog {
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error de validación");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.initOwner(stage);
+        alert.showAndWait();
+    }
+
+    private void showConfirmation(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmación");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.initOwner(stage);
