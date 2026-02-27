@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<game>
+  <player1 name="Dani">
+    <wins>10</wins>
+    <losses>6</losses>
+  </player1>
+  <player2 name="Sebas">
+    <wins>14</wins>
+    <losses>17</losses>
+  </player2>
+  <player1Color>WHITE</player1Color>
+  <player2Color>BLACK</player2Color>
+  <currentPlayerColor>BLACK</currentPlayerColor>
+  <gameStatus>IN_PROGRESS</gameStatus>
+  <board size="6">
+    <row index="0">BLACK,EMPTY,EMPTY,EMPTY,BLACK,EMPTY</row>
+    <row index="1">EMPTY,BLACK,WHITE,BLACK,EMPTY,EMPTY</row>
+    <row index="2">EMPTY,WHITE,BLACK,WHITE,EMPTY,EMPTY</row>
+    <row index="3">WHITE,EMPTY,WHITE,WHITE,EMPTY,EMPTY</row>
+    <row index="4">EMPTY,WHITE,EMPTY,EMPTY,EMPTY,EMPTY</row>
+    <row index="5">EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY</row>
+  </board>
+</game>

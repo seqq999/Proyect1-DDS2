@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <players>
   <player name="Sebas">
-    <wins>14</wins>
-    <losses>17</losses>
+    <wins>15</wins>
+    <losses>19</losses>
   </player>
   <player name="sebas">
     <wins>0</wins>
     <losses>2</losses>
   </player>
   <player name="Dani">
-    <wins>10</wins>
-    <losses>6</losses>
+    <wins>12</wins>
+    <losses>7</losses>
   </player>
   <player name="santi">
     <wins>1</wins>

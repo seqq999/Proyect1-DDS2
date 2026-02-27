@@ -8,6 +8,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * Panel lateral que muestra estadísticas y estado de la partida en Reverse Dots.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class StatsPanel extends VBox {
 
     private GameController gameController;
@@ -18,20 +24,33 @@ public class StatsPanel extends VBox {
     private Label countLabel;
     private Label turnLabel;
 
-    // Constructor sin argumentos requerido por GameView
+    /**
+     * Constructor sin argumentos requerido por GameView.
+     */
     public StatsPanel() {
         initComponents();
     }
 
+    /**
+     * Crea el panel de estadísticas con el controlador de juego.
+     * @param gameController Controlador de la partida
+     */
     public StatsPanel(GameController gameController) {
         this.gameController = gameController;
         initComponents();
     }
 
+    /**
+     * Asigna el controlador de juego al panel.
+     * @param gameController Controlador de la partida
+     */
     public void setGameController(GameController gameController) {
         this.gameController = gameController;
     }
 
+    /**
+     * Inicializa los componentes visuales del panel.
+     */
     private void initComponents() {
         this.setSpacing(8);
         this.setPadding(new Insets(10));
@@ -58,6 +77,9 @@ public class StatsPanel extends VBox {
         );
     }
 
+    /**
+     * Actualiza la información mostrada en el panel.
+     */
     public void updatePane() {
         if (gameController == null || !gameController.isGameStarted()) {
             return;
@@ -81,8 +103,11 @@ public class StatsPanel extends VBox {
         highlightCurrentPlayer();
     }
 
+    /**
+     * Resalta el jugador que tiene el turno actual.
+     */
     private void highlightCurrentPlayer() {
-        // Resaltar en negrita el jugador con turno actual, el otro normal
+        //se esalta en negrita el jugador con turno actual, el otro normal
         Color currentColor = gameController.getCurrentColor();
         Color p1Color = gameController.getGame().getPlayer1Color();
 
@@ -95,6 +120,11 @@ public class StatsPanel extends VBox {
         }
     }
 
+    /**
+     * Devuelve el nombre del color con ícono.
+     * @param color Color a mostrar
+     * @return Nombre del color con ícono
+     */
     private String colorLabel(Color color) {
         return color == Color.BLACK ? "⚫ Negro" : "⚪ Blanco";
     }

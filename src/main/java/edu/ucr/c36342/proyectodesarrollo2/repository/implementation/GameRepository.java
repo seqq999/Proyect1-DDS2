@@ -22,23 +22,14 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Implementación del repositorio de partidas usando archivos XML.
- * Cada archivo contiene una sola partida guardada.
- *
- * Estructura: Un archivo XML = Una partida
- * Ejemplo:
- * - saved_games/monday.xml    → Partida del lunes
- * - saved_games/tuesday.xml   → Partida del martes
+ * Implementación de repositorio de partidas guardadas en archivos XML para Reverse Dots.
+ * Permite guardar y cargar partidas desde disco.
  *
  * @author Sebastian Quiros Solano --- C36342
  * @version 1.0
  */
 public class GameRepository implements IGameRepository {
 
-    /**
-     * Constructor del repositorio de partidas.
-     * No requiere configuración inicial.
-     */
     public GameRepository() {
         //no necesita estado interno
     }
@@ -53,10 +44,8 @@ public class GameRepository implements IGameRepository {
      * @throws IllegalArgumentException Si game o filePath son null/vacíos
      * @throws IOException Si hay error al guardar el archivo
      */
-
     @Override
     public void save(Game game, String filePath) throws IOException {
-        // Validaciones
         if (game == null) {
             throw new IllegalArgumentException("Game no puede ser null");
         }
@@ -64,7 +53,7 @@ public class GameRepository implements IGameRepository {
             throw new IllegalArgumentException("FilePath no puede ser null o vacío");
         }
 
-        // Crear directorio padre si no existe
+        //crear el directorio padre si no existe
         File file = new File(filePath);
         File parentDir = file.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
@@ -75,13 +64,13 @@ public class GameRepository implements IGameRepository {
         }
 
         try {
-            // Crear elemento del juego
+            //crea los elementos del juego
             Element gameElement = gameToElement(game);
 
-            // Crear documento con el juego como elemento raíz
+            //crea un documento con el juego como elemento raíz
             Document document = new Document(gameElement);
 
-            // Guardar en el archivo especificado
+            //guarda en el archivo especificado
             XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
             try (FileOutputStream fos = new FileOutputStream(file)) {
                 outputter.output(document, fos);
@@ -97,12 +86,11 @@ public class GameRepository implements IGameRepository {
      * @param filePath Ruta completa del archivo a cargar
      * @return El juego reconstruido desde el archivo
      * @throws IllegalArgumentException Si filePath es null/vacío
-     * @throws FileNotFoundException Si el archivo no existe
+     * @throws GameLoadException Si el archivo no existe o está corrupto
      * @throws IOException Si hay error al leer o parsear el archivo
      */
     @Override
     public Game load(String filePath) throws GameLoadException, IOException {
-        // Validaciones
         if (filePath == null || filePath.trim().isEmpty()) {
             throw new IllegalArgumentException("La ruta del archivo no puede ser nula o vacía");
         }
@@ -113,14 +101,14 @@ public class GameRepository implements IGameRepository {
         }
 
         try {
-            // Cargar documento XML
+            //carga el documento XML
             SAXBuilder builder = new SAXBuilder();
             Document document = builder.build(file);
 
-            // Obtener elemento raíz (que ES el <game>)
+            //obtiene el elemento raíz (<game>)
             Element gameElement = document.getRootElement();
 
-            // Verificar que sea un elemento <game>
+            //verifica que sea un elemento <game>
             if (!"game".equals(gameElement.getName())) {
                 throw new GameLoadException(
                         "El archivo no contiene un elemento <game> válido. Encontrado: <" +
@@ -128,7 +116,7 @@ public class GameRepository implements IGameRepository {
                 );
             }
 
-            // Convertir a objeto Game
+            //convierte a objeto Game
             return elementToGame(gameElement);
 
         } catch (JDOMException e) {
@@ -156,8 +144,6 @@ public class GameRepository implements IGameRepository {
         return file.exists() && file.isFile();
     }
 
-    // ==================== MÉTODOS PRIVADOS DE SERIALIZACIÓN ====================
-
     /**
      * Convierte un objeto Game a un elemento XML.
      *
@@ -167,7 +153,6 @@ public class GameRepository implements IGameRepository {
     private Element gameToElement(Game game) {
         Element gameElem = new Element("game");
 
-        // Serializar jugadores
         Element player1Elem = playerToElement(game.getPlayer1());
         player1Elem.setName("player1");
         gameElem.addContent(player1Elem);
@@ -176,7 +161,6 @@ public class GameRepository implements IGameRepository {
         player2Elem.setName("player2");
         gameElem.addContent(player2Elem);
 
-        // Colores asignados
         Element player1ColorElem = new Element("player1Color")
                 .setText(game.getPlayer1Color().name());
         gameElem.addContent(player1ColorElem);
@@ -185,17 +169,16 @@ public class GameRepository implements IGameRepository {
                 .setText(game.getPlayer2Color().name());
         gameElem.addContent(player2ColorElem);
 
-        // Color del jugador actual
         Element currentPlayerColorElem = new Element("currentPlayerColor")
                 .setText(game.getCurrentPlayerColor().name());
         gameElem.addContent(currentPlayerColorElem);
 
-        // Estado del juego
+        //estado del juego
         Element gameStatusElem = new Element("gameStatus")
                 .setText(game.getGameStatus().name());
         gameElem.addContent(gameStatusElem);
 
-        // Tablero
+        //tablero
         Element boardElem = boardToElement(game.getBoard());
         gameElem.addContent(boardElem);
 
@@ -209,26 +192,22 @@ public class GameRepository implements IGameRepository {
      * @return Objeto Game reconstruido
      */
     private Game elementToGame(Element gameElement) {
-        // Deserializar jugadores
         Element player1Elem = gameElement.getChild("player1");
         Player player1 = elementToPlayer(player1Elem);
 
         Element player2Elem = gameElement.getChild("player2");
         Player player2 = elementToPlayer(player2Elem);
 
-        // Deserializar colores
         Color player1Color = Color.valueOf(gameElement.getChildText("player1Color"));
         Color player2Color = Color.valueOf(gameElement.getChildText("player2Color"));
         Color currentPlayerColor = Color.valueOf(gameElement.getChildText("currentPlayerColor"));
 
-        // Deserializar estado
         GameStatus gameStatus = GameStatus.valueOf(gameElement.getChildText("gameStatus"));
 
-        // Deserializar tablero
         Element boardElem = gameElement.getChild("board");
         Board board = elementToBoard(boardElem);
 
-        // Usar el constructor completo para cargar partidas
+        //usa el constructor completo para cargar partidas
         return new Game(player1, player2, board,
                 player1Color, player2Color,
                 currentPlayerColor, gameStatus);
@@ -246,7 +225,6 @@ public class GameRepository implements IGameRepository {
 
         int size = board.getSize();
 
-        // Serializar cada fila del tablero
         for (int row = 0; row < size; row++) {
             Element rowElem = new Element("row");
             rowElem.setAttribute("index", String.valueOf(row));
@@ -277,17 +255,14 @@ public class GameRepository implements IGameRepository {
     private Board elementToBoard(Element boardElement) {
         int size = Integer.parseInt(boardElement.getAttributeValue("size"));
 
-        // Crear un tablero vacío
         Board board = new Board(size, false);
 
         List<Element> rowElements = boardElement.getChildren("row");
 
-        // Sobrescribir las celdas con los valores guardados
         for (Element rowElem : rowElements) {
             int rowIndex = Integer.parseInt(rowElem.getAttributeValue("index"));
             String rowData = rowElem.getText();
 
-            // Separar las celdas
             String[] cells = rowData.split(",");
 
             for (int col = 0; col < cells.length; col++) {

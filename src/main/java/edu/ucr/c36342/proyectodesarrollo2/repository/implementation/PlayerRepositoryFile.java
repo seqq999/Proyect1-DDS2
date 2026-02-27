@@ -15,12 +15,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Implementación de repositorio de jugadores basado en archivos XML para Reverse Dots.
+ * Permite persistir y recuperar jugadores desde disco.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class PlayerRepositoryFile implements IPlayerRepository{
 
     private final String filePath;
     private File xmlFile;
     private Document doc;
 
+    /**
+     * Crea el repositorio y el archivo XML si no existe.
+     *
+     * @param filePath Ruta del archivo XML
+     * @throws IOException si ocurre un error de IO
+     */
     public PlayerRepositoryFile(String filePath) throws IOException {
         this.filePath = filePath;
         File file = new File(filePath);
@@ -46,6 +59,14 @@ public class PlayerRepositoryFile implements IPlayerRepository{
     }
 
 
+    /**
+     * Guarda un jugador en el archivo XML.
+     * Si ya existe, actualiza sus datos.
+     *
+     * @param player Jugador a guardar
+     * @throws IOException si ocurre un error de IO
+     * @throws NullPointerException si el jugador es null
+     */
     @Override
     public void save(Player player) throws IOException {
         if (player == null) {
@@ -59,11 +80,11 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         Element existingPlayer = findPlayerElement(player.getName(), root);
 
         if (existingPlayer != null) {
-            // Ya existe → Actualizar
+            //ya existe se actualiza
             existingPlayer.getChild("wins").setText(String.valueOf(player.getWins()));
             existingPlayer.getChild("losses").setText(String.valueOf(player.getLosses()));
         } else {
-            // No existe → Agregar nuevo
+            //no existe se agrega uno nuevo
             Element playerElement = playerToElement(player);
             root.addContent(playerElement);
         }
@@ -71,6 +92,15 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         saveXml();
     }
 
+    /**
+     * Busca un jugador por nombre.
+     *
+     * @param name Nombre del jugador
+     * @return El jugador encontrado
+     * @throws IOException si ocurre un error de IO
+     * @throws PlayerNotFoundException si el jugador no existe
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
+     */
     @Override
     public Player findByName(String name) throws IOException, PlayerNotFoundException {
         if(name == null || name.isEmpty()){
@@ -90,6 +120,12 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         throw new PlayerNotFoundException("No se encontró el jugador: " + name);
     }
 
+    /**
+     * Obtiene todos los jugadores almacenados.
+     *
+     * @return Lista de jugadores
+     * @throws IOException si ocurre un error de IO
+     */
     @Override
     public List<Player> findAll() throws IOException {
         loadDocument();
@@ -106,6 +142,13 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         return players;
     }
 
+    /**
+     * Actualiza los datos de un jugador existente.
+     *
+     * @param player Jugador a actualizar
+     * @throws IOException si ocurre un error de IO
+     * @throws NullPointerException si el jugador es null
+     */
     @Override
     public void update(Player player) throws IOException {
         if(player == null) {
@@ -130,6 +173,14 @@ public class PlayerRepositoryFile implements IPlayerRepository{
 
     }
 
+    /**
+     * Elimina un jugador del archivo XML.
+     *
+     * @param player Jugador a eliminar
+     * @return true si fue eliminado, false si no existe
+     * @throws IOException si ocurre un error de IO
+     * @throws NullPointerException si el jugador es null
+     */
     @Override
     public boolean delete(Player player) throws IOException {
         if (player == null) {
@@ -151,11 +202,12 @@ public class PlayerRepositoryFile implements IPlayerRepository{
     }
 
     /**
-     * Verifica si un jugador existe en el repositorio.
+     * Verifica si un jugador existe por nombre.
      *
-     * @param playerName Nombre del jugador a buscar
-     * @return true si el jugador existe, false en caso contrario
-     * @throws IllegalArgumentException Si playerName es null o vacío
+     * @param playerName Nombre del jugador
+     * @return true si existe, false si no
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
      */
     @Override
     public boolean exists(String playerName) throws IOException {
@@ -175,11 +227,12 @@ public class PlayerRepositoryFile implements IPlayerRepository{
     }
 
     /**
-     * Verifica si un jugador existe en el repositorio, usando un objeto player.
+     * Verifica si un jugador existe usando un objeto Player.
      *
      * @param player Jugador a buscar
-     * @return true si el jugador existe, false en caso contrario
-     * @throws IllegalArgumentException Si player es null
+     * @return true si existe, false si no
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalArgumentException si el jugador es null
      */
     public boolean exists(Player player) throws IOException {
         if (player == null) {
@@ -190,6 +243,7 @@ public class PlayerRepositoryFile implements IPlayerRepository{
 
     /**
      * Elimina jugadores duplicados, dejando solo el último.
+     * @throws IOException si ocurre un error de IO
      */
     public void removeDuplicates() throws IOException {
         loadDocument();
@@ -207,13 +261,13 @@ public class PlayerRepositoryFile implements IPlayerRepository{
             String name = playerElem.getAttributeValue("name");
 
             if (seenNames.contains(name)) {
-                toRemove.add(playerElem);  // Es duplicado
+                toRemove.add(playerElem);  //es duplicado
             } else {
                 seenNames.add(name);
             }
         }
 
-        // Eliminar duplicados
+        //elimina los duplicados
         for (Element elem : toRemove) {
             root.removeContent(elem);
         }
@@ -221,6 +275,13 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         saveXml();
     }
 
+    /**
+     * Busca un elemento XML de jugador por nombre.
+     *
+     * @param playerName Nombre del jugador
+     * @param root Elemento raíz del XML
+     * @return Elemento XML del jugador o null si no existe
+     */
     private Element findPlayerElement(String playerName, Element root) {
         if (playerName == null || playerName.trim().isEmpty() || root == null) {
             return null;
@@ -233,6 +294,11 @@ public class PlayerRepositoryFile implements IPlayerRepository{
 
     }
 
+    /**
+     * Carga el documento XML en memoria.
+     *
+     * @throws IOException si ocurre un error de IO
+     */
     private void loadDocument() throws IOException {
         try {
             SAXBuilder saxBuilder = new SAXBuilder();
@@ -275,6 +341,11 @@ public class PlayerRepositoryFile implements IPlayerRepository{
         return new Player(name, wins, losses);
     }
 
+    /**
+     * Guarda el documento XML en disco.
+     *
+     * @throws IOException si ocurre un error de IO
+     */
     private void saveXml() throws IOException {
         XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
         try (FileOutputStream fos = new FileOutputStream(xmlFile)) {

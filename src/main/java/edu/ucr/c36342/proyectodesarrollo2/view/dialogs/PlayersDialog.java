@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Diálogo para mostrar y gestionar jugadores registrados.
+ * Diálogo para mostrar y gestionar jugadores registrados en Reverse Dots.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
  */
 public class PlayersDialog {
     private Stage stage;
@@ -30,6 +33,11 @@ public class PlayersDialog {
     private Button deleteButton;
     private TextField createPlayerField;
 
+    /**
+     * Crea el diálogo de jugadores.
+     * @param parent Ventana principal
+     * @param playerController Controlador de jugadores
+     */
     public PlayersDialog(Stage parent, PlayerController playerController) {
         this.stage = parent;
         this.playerController = playerController;
@@ -44,10 +52,16 @@ public class PlayersDialog {
         dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
     }
 
+    /**
+     * Muestra el diálogo de jugadores.
+     */
     public void showDialog() {
         dialog.showAndWait();
     }
 
+    /**
+     * Inicializa los componentes visuales del diálogo.
+     */
     private void initComponents() {
         tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -83,6 +97,9 @@ public class PlayersDialog {
         dialog.getDialogPane().setPrefSize(1000, 700);
     }
 
+    /**
+     * Configura el modelo de la tabla de jugadores.
+     */
     private void createTableModel() {
         nameColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getName()));
         winsColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getWins()).asObject());
@@ -93,6 +110,9 @@ public class PlayersDialog {
         });
     }
 
+    /**
+     * Carga la lista de jugadores en la tabla.
+     */
     private void loadPlayers() {
         try {
             List<Player> players = playerController.getAllPlayers();
@@ -107,6 +127,9 @@ public class PlayersDialog {
         }
     }
 
+    /**
+     * Maneja la creación de un nuevo jugador.
+     */
     private void handleCreatePlayer() {
         String newName = createPlayerField.getText().trim();
         if (newName.isEmpty()) {
@@ -127,6 +150,9 @@ public class PlayersDialog {
         }
     }
 
+    /**
+     * Maneja la eliminación de un jugador seleccionado.
+     */
     private void handleDeletePlayer() {
         Player selected = tableView.getSelectionModel().getSelectedItem();
         if (selected == null) {
@@ -148,6 +174,10 @@ public class PlayersDialog {
         }
     }
 
+    /**
+     * Muestra un mensaje de error.
+     * @param message Mensaje de error
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error de validación");
@@ -157,6 +187,10 @@ public class PlayersDialog {
         alert.showAndWait();
     }
 
+    /**
+     * Muestra un diálogo de confirmación.
+     * @param message Mensaje a mostrar
+     */
     private void showConfirmation(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmación");

@@ -7,6 +7,9 @@ import edu.ucr.c36342.proyectodesarrollo2.repository.exceptions.PlayerNotFoundEx
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controlador para operaciones sobre jugadores.
+ */
 public class PlayerController {
 
     private IPlayerRepository playerRepo;
@@ -15,6 +18,14 @@ public class PlayerController {
         this.playerRepo = playerRepo;
     }
 
+    /**
+     * Crea un nuevo jugador y lo guarda en el repositorio.
+     *
+     * @param playerName Nombre del jugador
+     * @return true si el jugador fue registrado
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
+     */
     public boolean registerPlayer(String playerName) throws IOException {
         if (playerName == null || playerName.isEmpty()) {
             throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
@@ -25,6 +36,15 @@ public class PlayerController {
         return true;
     }
 
+    /**
+     * Busca un jugador por su nombre.
+     *
+     * @param name Nombre del jugador
+     * @return El jugador encontrado
+     * @throws IOException si ocurre un error de IO
+     * @throws PlayerNotFoundException si el jugador no existe
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
+     */
     public Player getPlayerByName(String name) throws IOException, PlayerNotFoundException {
         if(name == null || name.isEmpty()){
             throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
@@ -32,10 +52,24 @@ public class PlayerController {
         return playerRepo.findByName(name);
     }
 
+    /**
+     * Obtiene la lista de todos los jugadores registrados.
+     *
+     * @return Lista de jugadores
+     * @throws IOException si ocurre un error de IO
+     */
     public List<Player> getAllPlayers() throws IOException {
         return playerRepo.findAll();
     }
 
+    /**
+     * Verifica si un jugador existe por su nombre.
+     *
+     * @param name Nombre del jugador
+     * @return true si el jugador existe
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
+     */
     public boolean playerExists(String name) throws IOException {
         if(name == null || name.isEmpty()){
             throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
@@ -43,6 +77,14 @@ public class PlayerController {
         return playerRepo.exists(name);
     }
 
+    /**
+     * Actualiza las estadísticas de un jugador en el repositorio.
+     *
+     * @param player Jugador a actualizar
+     * @return true si la actualización fue exitosa
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalArgumentException si el jugador es nulo
+     */
     public boolean updatePlayerStats(Player player) throws IOException {
         if (player == null){
             throw new IllegalArgumentException("El jugador no puede ser nulo");
@@ -52,6 +94,15 @@ public class PlayerController {
         return true;
     }
 
+    /**
+     * Elimina un jugador por su nombre.
+     *
+     * @param name Nombre del jugador a eliminar
+     * @return true si el jugador fue eliminado
+     * @throws IOException si ocurre un error de IO
+     * @throws PlayerNotFoundException si el jugador no existe
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
+     */
     public boolean deletePlayer(String name) throws IOException, PlayerNotFoundException {
         if(name == null || name.isEmpty()){
             throw new IllegalArgumentException("El nombre del jugador no puede ser nulo o vacío");
@@ -64,11 +115,13 @@ public class PlayerController {
     }
 
     /**
+     * Obtiene un jugador por nombre o lo crea si no existe.
      *
-     * Obtiene un jugador por su nombre o lo crea si no existe.
-     * @param name
-     * @return
-     * @throws IOException
+     * @param name Nombre del jugador
+     * @return El jugador existente o creado
+     * @throws IOException si ocurre un error de IO
+     * @throws PlayerNotFoundException si el jugador no existe
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
      */
     public Player getOrCreatePlayer(String name) throws IOException, PlayerNotFoundException {
         if (name == null || name.isEmpty()) {

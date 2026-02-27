@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Diálogo para configurar y crear una nueva partida en Reverse Dots.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class NewGameDialog {
     private Stage stage;
     private PlayerController playerController;
@@ -25,14 +31,19 @@ public class NewGameDialog {
     private TextField newPlayer2Field;
     private Button addPlayer2Button;
 
+    /**
+     * Crea el diálogo de nueva partida.
+     * @param parent Ventana principal
+     * @param playerController Controlador de jugadores
+     */
     public NewGameDialog(Stage parent, PlayerController playerController) {
         this.stage = parent;
         this.playerController = playerController;
         this.result = new DialogResult();
         this.dialog = new Dialog<>();
         this.dialog.initOwner(stage);
-        this.dialog.setTitle("Nuevo Juego");
-        this.dialog.setHeaderText("Configura tu nuevo juego");
+        this.dialog.setTitle("Nueva Partida");
+        this.dialog.setHeaderText("Configura tu nueva partida");
 
         initComponents();
         loadPlayerName();
@@ -40,6 +51,10 @@ public class NewGameDialog {
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
     }
 
+    /**
+     * Muestra el diálogo y devuelve el resultado de la configuración.
+     * @return Resultado de la configuración (jugadores, tamaño, confirmación)
+     */
     public DialogResult showDialog() {
         Optional<ButtonType> buttonResult = dialog.showAndWait();
         if (buttonResult.isPresent() && buttonResult.get() == ButtonType.OK) {
@@ -50,10 +65,13 @@ public class NewGameDialog {
         return result;
     }
 
+    /**
+     * Inicializa los componentes visuales del diálogo.
+     */
     private void initComponents() {
         player1Field = new ComboBox<>();
         player2Field = new ComboBox<>();
-        boardSizeField = new Spinner<>(3, 10, 3);
+        boardSizeField = new Spinner<>(4, 10, 4);
         boardSizeField.setEditable(true);
 
         newPlayer1Field = new TextField();
@@ -87,6 +105,9 @@ public class NewGameDialog {
         dialog.getDialogPane().setContent(grid);
     }
 
+    /**
+     * Carga los nombres de jugadores existentes en los ComboBox.
+     */
     private void loadPlayerName() {
         try {
             List<Player> players = playerController.getAllPlayers();
@@ -103,6 +124,9 @@ public class NewGameDialog {
         }
     }
 
+    /**
+     * Maneja la acción al confirmar la configuración.
+     */
     private void handleOk() {
         if (!validateInputs()) {
             return;
@@ -113,10 +137,17 @@ public class NewGameDialog {
         result.setConfirmed(true);
     }
 
+    /**
+     * Maneja la acción al cancelar la configuración.
+     */
     private void handleCancel() {
         result.setConfirmed(false);
     }
 
+    /**
+     * Valida los datos ingresados por el usuario.
+     * @return true si los datos son válidos
+     */
     private boolean validateInputs() {
         String p1 = player1Field.getValue();
         String p2 = player2Field.getValue();
@@ -136,6 +167,10 @@ public class NewGameDialog {
         return true;
     }
 
+    /**
+     * Muestra un mensaje de error.
+     * @param message Mensaje de error
+     */
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error de validación");
@@ -145,6 +180,12 @@ public class NewGameDialog {
         alert.showAndWait();
     }
 
+    /**
+     * Agrega un nuevo jugador a la lista y ComboBox.
+     * @param inputField Campo de texto de entrada
+     * @param targetCombo ComboBox a actualizar
+     * @param otherCombo Otro ComboBox a actualizar
+     */
     private void addNewPlayer(TextField inputField, ComboBox<String> targetCombo, ComboBox<String> otherCombo) {
         String name = inputField.getText().trim();
         if (name.isEmpty()) {
@@ -159,7 +200,7 @@ public class NewGameDialog {
             if (!otherCombo.getItems().contains(player.getName())) {
                 otherCombo.getItems().add(player.getName());
             }
-            targetCombo.setValue(player.getName()); // Selecciona automáticamente el nuevo jugador
+            targetCombo.setValue(player.getName()); //se selecciona automáticamente el nuevo jugador
             inputField.clear();
         } catch (IOException | IllegalArgumentException | PlayerNotFoundException e) {
             showError("Error al agregar jugador: " + e.getMessage());

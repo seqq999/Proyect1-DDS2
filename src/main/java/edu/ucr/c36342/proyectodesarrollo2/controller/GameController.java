@@ -16,6 +16,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Controlador para la lógica del juego y gestión de partidas de Reverse Dots.
+ * Permite iniciar, cargar, guardar y finalizar partidas, así como gestionar movimientos y estadísticas.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class GameController {
     private Game game;
     private PlayerRepositoryFile playerRepository;
@@ -32,7 +39,16 @@ public class GameController {
         this.playerController = playerController;
     }
 
-
+    /**
+     * Inicia una nueva partida con los nombres de los jugadores y el tamaño del tablero.
+     *
+     * @param player1Name Nombre del primer jugador
+     * @param player2Name Nombre del segundo jugador
+     * @param boardSize Tamaño del tablero
+     * @throws IOException si ocurre un error de IO
+     * @throws PlayerNotFoundException si un jugador no se encuentra
+     * @throws IllegalArgumentException si los nombres son nulos o vacíos
+     */
     public void startNewGame(String player1Name, String player2Name, int boardSize) throws IOException, PlayerNotFoundException {
         if (player1Name == null || player2Name == null || player1Name.isEmpty() || player2Name.isEmpty()) {
             throw new IllegalArgumentException("Los nombres de los jugadores no pueden ser nulos o vacíos");
@@ -52,14 +68,21 @@ public class GameController {
         this.game = new Game(player1, player2, boardSize);
     }
 
-
-
+    /**
+     * Realiza un movimiento en el tablero.
+     *
+     * @param row Fila donde se coloca la ficha
+     * @param col Columna donde se coloca la ficha
+     * @return Resultado del movimiento (éxito, turno saltado, fin de juego, inválido)
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalStateException si no hay partida iniciada
+     */
     public GameResult makeMove(int row, int col) throws IOException {
         if(game == null){
             throw new IllegalStateException("No se ha iniciado una partida.");
         }
 
-        //valida si es valido y hace el movimiento
+        //verifica si es valido y hace el movimiento
         if(game.getBoard().isValidMove(row, col,game.getCurrentPlayerColor())){
             game.getBoard().makeMove(row,col,game.getCurrentPlayerColor());
             game.switchTurn();
@@ -93,14 +116,31 @@ public class GameController {
         }
     }
 
+    /**
+     * Obtiene los movimientos válidos para el jugador actual.
+     *
+     * @return Lista de posiciones válidas
+     */
     public List<Position> getValidMoves(){
         return game.getBoard().getValidMoves(game.getCurrentPlayerColor()); // Placeholder
     }
 
+    /**
+     * Indica si la partida ha terminado.
+     *
+     * @return true si la partida está finalizada
+     */
     public boolean isGameOver(){
         return game.isFinished();
     }
 
+    /**
+     * Devuelve el jugador ganador o null si hay empate.
+     *
+     * @return Jugador ganador o null si es empate
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalStateException si no hay partida iniciada
+     */
     public Player getWinner() throws IOException {
         if (game == null) {
             throw new IllegalStateException("No se ha iniciado una partida.");
@@ -115,7 +155,7 @@ public class GameController {
         } else if (whiteCount > blackCount) {
             winnerColor = Color.WHITE;
         } else {
-            return null; // Empate
+            return null; //esto sería que queda en empate
         }
 
         if(game.getPlayer1Color() == winnerColor){
@@ -129,19 +169,46 @@ public class GameController {
         }
     }
 
+    /**
+     * Devuelve el jugador actual.
+     *
+     * @return Jugador en turno
+     */
     public Player getCurrentPlayer(){return game.getCurrentPlayer();}
 
-
+    /**
+     * Devuelve el color del jugador actual.
+     *
+     * @return Color del jugador en turno
+     */
     public Color getCurrentColor(){return game.getCurrentPlayerColor();}
 
+    /**
+     * Cuenta las fichas negras.
+     *
+     * @return Cantidad de fichas negras
+     */
     public int getBlackTokensCount() {
         return game.getBoard().countTokens(Color.BLACK);
     }
 
+    /**
+     * Cuenta las fichas blancas.
+     *
+     * @return Cantidad de fichas blancas
+     */
     public int getWhiteTokensCount(){
         return game.getBoard().countTokens(Color.WHITE);
     }
 
+    /**
+     * Guarda la partida en un archivo.
+     *
+     * @param filePath Ruta del archivo donde guardar
+     * @return Resultado de la operación de guardado
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalArgumentException si la ruta es inválida o no hay partida
+     */
     public GameResult saveGame(String filePath) throws IOException {
 
         if(filePath == null || filePath.isEmpty()){
@@ -157,18 +224,45 @@ public class GameController {
         }
     }
 
+    /**
+     * Devuelve el tablero actual.
+     *
+     * @return Tablero de la partida
+     */
     public Board getBoard(){return game.getBoard();}
 
+    /**
+     * Devuelve la partida actual.
+     *
+     * @return Objeto Game actual
+     */
     public Game getGame(){return game;}
 
+    /**
+     * Indica si la partida está iniciada.
+     *
+     * @return true si hay partida en curso
+     */
     public boolean isGameStarted(){return game != null;}
 
+    /**
+     * Reinicia la partida actual.
+     */
     public void resetGame(){
         if(game != null){
             game.reset();
         }
     }
 
+    /**
+     * Carga una partida desde archivo.
+     *
+     * @param filePath Ruta del archivo a cargar
+     * @return Resultado de la operación de carga
+     * @throws IOException si ocurre un error de IO
+     * @throws GameLoadException si ocurre un error al cargar la partida
+     * @throws IllegalArgumentException si la ruta es inválida
+     */
     public GameResult loadGame(String filePath) throws IOException, GameLoadException {
         if(filePath == null || filePath.isEmpty()){
             throw new IllegalArgumentException("Invalid file path");
@@ -178,13 +272,19 @@ public class GameController {
 
         if(loadedGame != null){
             this.game = loadedGame;
-            this.currentGameFilePath = filePath; // Guardar la ruta del archivo cargado
+            this.currentGameFilePath = filePath; //guarda la ruta del archivo cargado
             return GameResult.LOAD_SUCCESS;
         } else {
             return GameResult.LOAD_ERROR;
         }
     }
 
+    /**
+     * Finaliza la partida y actualiza estadísticas.
+     *
+     * @throws IOException si ocurre un error de IO
+     * @throws IllegalStateException si no hay partida iniciada
+     */
     public void endGame() throws IOException {
         if (game == null) {
             throw new IllegalStateException("No se ha iniciado una partida.");
@@ -200,7 +300,7 @@ public class GameController {
             winner.incrementWins();
             loser.incrementLosses();
 
-            //guardar en repositorio
+            //guardar en el repositorio
             playerRepository.update(winner);
             playerRepository.update(loser);
         }
@@ -218,6 +318,7 @@ public class GameController {
 
     /**
      * Setter para el objeto Game, solo para pruebas unitarias.
+     *
      * @param game instancia de Game a usar en el controlador
      */
     public void setGame(Game game) {

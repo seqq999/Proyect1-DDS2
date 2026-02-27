@@ -3,7 +3,7 @@ package edu.ucr.c36342.proyectodesarrollo2.model;
 import java.util.Objects;
 
 /**
- * representa una posición (fila, columna) en el tablero de juego.
+ * Representa una posición (fila, columna) en el tablero de Reverse Dots.
  *
  * @author Sebastian Quiros Solano --- C36342
  * @version 1.0

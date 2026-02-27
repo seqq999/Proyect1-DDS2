@@ -6,6 +6,7 @@ import edu.ucr.c36342.proyectodesarrollo2.view.dialogs.NewGameDialog;
 import edu.ucr.c36342.proyectodesarrollo2.view.dialogs.PlayersDialog;
 import edu.ucr.c36342.proyectodesarrollo2.view.panels.BoardPanel;
 import edu.ucr.c36342.proyectodesarrollo2.view.panels.StatsPanel;
+import edu.ucr.c36342.proyectodesarrollo2.view.util.ViewUtils;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -16,6 +17,13 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Vista principal del juego Reverse Dots.
+ * Gestiona la interfaz y las acciones del usuario durante la partida.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class GameView {
     private Stage stage;
     private GameController gameController;
@@ -26,6 +34,13 @@ public class GameView {
     private MenuBar menuBar;
     private BorderPane root;
 
+    /**
+     * Crea la vista del juego con los controladores y paneles necesarios.
+     *
+     * @param gameController Controlador de la partida
+     * @param playerController Controlador de jugadores
+     * @param boardPanel Panel del tablero
+     */
     public GameView(GameController gameController, PlayerController playerController, BoardPanel boardPanel) {
         this.gameController = gameController;
         this.playerController = playerController;
@@ -36,6 +51,9 @@ public class GameView {
         this.root = new BorderPane();
     }
 
+    /**
+     * Inicializa los componentes visuales de la vista.
+     */
     private void initComponents() {
         VBox leftPanel = new VBox(10, statsPanel);
         leftPanel.setMinWidth(180);
@@ -48,7 +66,11 @@ public class GameView {
         root.setTop(menuBar);
     }
 
-    private void setupMenu() throws  IOException {
+    /**
+     * Configura el menú superior de la ventana.
+     * @throws IOException si ocurre un error al cargar recursos
+     */
+    private void setupMenu() throws IOException {
         Menu gameMenu = new Menu("Juego");
         MenuItem newGame = new MenuItem("Nuevo Juego");
         MenuItem loadGame = new MenuItem("Cargar Juego");
@@ -76,7 +98,10 @@ public class GameView {
         menuBar.getMenus().addAll(gameMenu, showMenu);
     }
 
-    private void showNewGameDialog() {
+    /**
+     * Muestra el diálogo para iniciar un nuevo juego.
+     */
+    public void showNewGameDialog() {
         NewGameDialog dialog = new NewGameDialog(stage, playerController);
         var result = dialog.showDialog();
         if (result.isConfirmed()) {
@@ -91,31 +116,21 @@ public class GameView {
         }
     }
 
+    /**
+     * Carga una partida desde archivo.
+     */
     private void loadGame() {
         try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Cargar partida");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos de partida (*.xml)", "*.xml"));
-
-            File defaultDir = new File(System.getProperty("user.dir"), "saved_games");
-            if (defaultDir.exists()) {
-                fileChooser.setInitialDirectory(defaultDir);
-            }
-
-            File file = fileChooser.showOpenDialog(stage);
-            if (file != null && file.exists()) {
-                gameController.loadGame(file.getAbsolutePath());
-                updateStatus("Partida cargada desde: " + file.getName());
-                showMessage("Partida cargada exitosamente desde: " + file.getName());
-                refresh(); // Redibuja tablero y stats
-            } else {
-                updateStatus("Carga cancelada.");
-            }
+            ViewUtils.loadGameAndShow(stage, gameController, playerController);
+            updateStatus("Partida cargada (ver nueva ventana)");
         } catch (Exception e) {
             showError("Error al cargar la partida: " + e.getMessage());
         }
     }
 
+    /**
+     * Guarda la partida actual en archivo.
+     */
     private void saveGame() {
         try {
             FileChooser fileChooser = new FileChooser();
@@ -128,7 +143,7 @@ public class GameView {
                 fileChooser.setInitialDirectory(defaultDir);
             }
 
-            File file = fileChooser.showSaveDialog(stage); // stage = tu ventana principal
+            File file = fileChooser.showSaveDialog(stage); //stage = ventana principal
             if (file != null) {
                 if (file.exists()) {
                     // Confirmación antes de sobrescribir
@@ -154,35 +169,54 @@ public class GameView {
         }
     }
 
+    /**
+     * Muestra el diálogo de jugadores/estadísticas.
+     */
     private void showPlayersDialog(){
-        PlayersDialog dialog = new PlayersDialog(stage, playerController);
-        dialog.showDialog();
-        updateStats(); // Actualiza el panel de estadísticas
-        updateStatus("Lista de jugadores actualizada."); // Refleja el cambio en el status
+        ViewUtils.showStatsDialog(stage, playerController);
+        updateStats(); //se actualiza el panel de estadísticas
+        updateStatus("Lista de jugadores actualizada."); //se refleja el cambio en el status
     }
 
-    private void exit(){
+    /**
+     * Sale del juego (cierra la ventana).
+     */
+    public void exit(){
         showConfirmation("¿Estás seguro de que deseas salir? Se perderán los cambios no guardados.");
         stage.close();
     }
 
+    /**
+     * Actualiza el mensaje de estado en la interfaz.
+     * @param message Mensaje a mostrar
+     */
     public void updateStatus(String message){
         if(statusLabel != null){
             statusLabel.setText(message);
         }
     }
 
+    /**
+     * Actualiza el panel de estadísticas.
+     */
     public void updateStats(){
         if(statsPanel != null){
             statsPanel.updatePane();
         }
     }
 
+    /**
+     * Refresca el tablero y las estadísticas.
+     */
     public void refresh(){
         boardPanel.repaint();
         updateStats();
     }
 
+    /**
+     * Muestra un mensaje de error en pantalla.
+     * @param message Mensaje de error
+     */
     private void showError(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
@@ -191,6 +225,10 @@ public class GameView {
         alert.showAndWait();
     }
 
+    /**
+     * Muestra la ventana principal del juego.
+     * @throws IOException si ocurre un error al cargar recursos
+     */
     public void show() throws IOException {
         setupMenu();
         initComponents();
@@ -205,6 +243,9 @@ public class GameView {
         scene.heightProperty().addListener((obs, oldVal, newVal) -> resizeBoardPanel());
     }
 
+    /**
+     * Ajusta el tamaño del tablero al tamaño de la ventana.
+     */
     private void resizeBoardPanel() {
         double width = root.getWidth();
         double height = root.getHeight();
@@ -217,10 +258,18 @@ public class GameView {
         boardPanel.repaint();
     }
 
+    /**
+     * Asigna el Stage principal a la vista.
+     * @param stage Ventana principal
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Muestra un mensaje informativo.
+     * @param message Mensaje a mostrar
+     */
     private void showMessage(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Éxito en el proceso");
@@ -230,6 +279,10 @@ public class GameView {
         alert.showAndWait();
     }
 
+    /**
+     * Muestra un diálogo de confirmación.
+     * @param message Mensaje a mostrar
+     */
     private void showConfirmation(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmación");
@@ -237,6 +290,35 @@ public class GameView {
         alert.setContentText(message);
         alert.initOwner(stage);
         alert.showAndWait();
+    }
+
+    /**
+     * Muestra opciones al finalizar la partida.
+     */
+    public void onGameFinished() {
+        Alert optionsAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        optionsAlert.setTitle("¿Qué deseas hacer?");
+        optionsAlert.setHeaderText("La partida ha terminado. Elige una opción:");
+        optionsAlert.setContentText(null);
+
+        ButtonType playAgainBtn = new ButtonType("Jugar otra partida");
+        ButtonType statsBtn = new ButtonType("Ver estadísticas");
+        ButtonType exitBtn = new ButtonType("Salir");
+
+        optionsAlert.getButtonTypes().setAll(playAgainBtn, statsBtn, exitBtn);
+        var result = optionsAlert.showAndWait();
+        if (result.isPresent()) {
+            if (result.get() == playAgainBtn) {
+                showNewGameDialog();
+            } else if (result.get() == statsBtn) {
+                //muestra el diálogo de jugadores/estadísticas
+                updateStats();
+                updateStatus("Mostrando estadísticas.");
+                new PlayersDialog(stage, playerController).showDialog();
+            } else if (result.get() == exitBtn) {
+                exit();
+            }
+        }
     }
 
 }

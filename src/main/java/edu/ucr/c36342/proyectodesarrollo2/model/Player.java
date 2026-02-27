@@ -3,8 +3,8 @@ package edu.ucr.c36342.proyectodesarrollo2.model;
 import java.util.Objects;
 
 /**
- * Representa un jugador del juego Reverse Dots.
- * Almacena el nombre, victorias y derrotas del jugador.
+ * Representa un jugador de Reverse Dots.
+ * Almacena nombre y estadísticas de victorias y derrotas.
  *
  * @author Sebastian Quiros Solano --- C36342
  * @version 1.0
@@ -105,7 +105,7 @@ public class Player {
         if (totalGames == 0) {
             return 0.0; //sin partidas jugadas
         }
-        return wins / (double) totalGames;// % de victorias
+        return wins / (double) totalGames;//% de victorias
     }
 
     @Override

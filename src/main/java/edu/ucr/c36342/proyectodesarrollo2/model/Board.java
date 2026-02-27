@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representa el tablero del juego Reverse Dots.
+ * Clase que representa el tablero del juego Reverse Dots.
  * Gestiona el estado de las celdas y las operaciones sobre el tablero.
  *
  * @author Sebastian Quiros Solano --- C36342
@@ -41,14 +41,14 @@ public class Board {
         this.size = size;
         cells = new CellState[size][size];
 
-        // Llena t0do de EMPTY
+        //llena t0do de EMPTY
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 cells[i][j] = CellState.EMPTY;
             }
         }
 
-        // Inicializar con patrón si se solicita
+        //inicia el tablero con las 4 fichas centrales
         if (initialize) {
             initializeBoard();
         }
@@ -74,17 +74,17 @@ public class Board {
      * @return true si el movimiento es válido
      */
     public boolean isValidMove(int row, int col, Color color) {
-        // Verificar que la celda esté dentro del tablero
+        //verifica que la celda esté dentro del tablero
         if (row < 0 || row >= size || col < 0 || col >= size) {
             return false;
         }
 
-        // La celda debe estar vacía
+        //verfica que la celda este vacía
         if (cells[row][col] != CellState.EMPTY) {
             return false;
         }
 
-        // Verificar en las 8 direcciones
+        //verifica en las 8 direcciones si se pueden voltear fichas del oponente
         int[][] directions = {
                 {-1, -1}, {-1, 0}, {-1, 1},  // arriba-izq, arriba, arriba-der
                 {0, -1},           {0, 1},    // izquierda, derecha
@@ -113,10 +113,10 @@ public class Board {
             throw new IllegalArgumentException("Movimiento inválido");
         }
 
-        // Colocar la ficha
+        //coloca la ficha
         cells[row][col] = colorToCellState(color);
 
-        // Voltear fichas en todas las direcciones
+        //voltea fichas en todas las direcciones
         int[][] directions = {
                 {-1, -1}, {-1, 0}, {-1, 1},
                 {0, -1},           {0, 1},
@@ -243,28 +243,28 @@ public class Board {
         int currentCol = col + dCol;
         boolean foundOpponent = false;
 
-        // Avanzar en la dirección
+        //avanza en la dirección
         while (currentRow >= 0 && currentRow < size &&
                 currentCol >= 0 && currentCol < size) {
 
             CellState currentCell = cells[currentRow][currentCol];
 
             if (currentCell == CellState.EMPTY) {
-                return false;  // Encontramos espacio vacío
+                return false;  //se encuentra un espacio vacío
             }
 
             if (currentCell == opponentState) {
-                foundOpponent = true;  // Encontramos al menos una ficha del oponente
+                foundOpponent = true;  //se encuentra al menos una ficha del oponente
             } else if (currentCell == myState) {
                 // Encontramos nuestra ficha
-                return foundOpponent;  // Solo es válido si había fichas del oponente en medio
+                return foundOpponent;  //solo es válido si había fichas del oponente en medio
             }
 
             currentRow += dRow;
             currentCol += dCol;
         }
 
-        return false;  // Salimos del tablero sin encontrar nuestra ficha
+        return false;  //se sale del tablero sin encontrar nuestra ficha
     }
 
     /**
@@ -288,15 +288,15 @@ public class Board {
         int currentRow = row + dRow;
         int currentCol = col + dCol;
 
-        // Voltear fichas hasta encontrar nuestra ficha
+        //voltea fichas hasta encontrar nuestra ficha
         while (currentRow >= 0 && currentRow < size &&
                 currentCol >= 0 && currentCol < size) {
 
             if (cells[currentRow][currentCol] == myState) {
-                break;  // Encontramos nuestra ficha, detenerse
+                break;  //cuando se encuentra nuestra ficha, se detiene
             }
 
-            // Voltear la ficha del oponente
+            //voltea la ficha del oponente
             cells[currentRow][currentCol] = myState;
             flipped++;
 
@@ -321,14 +321,14 @@ public class Board {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        // Encabezado de columnas
+        //cols
         sb.append("  ");
         for (int col = 0; col < size; col++) {
             sb.append(String.format(" %2d", col));
         }
         sb.append("\n");
 
-        // Filas
+        //filas
         for (int row = 0; row < size; row++) {
             sb.append(String.format("%2d ", row));
 

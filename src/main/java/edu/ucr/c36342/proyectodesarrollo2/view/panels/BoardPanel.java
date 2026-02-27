@@ -8,6 +8,8 @@ import edu.ucr.c36342.proyectodesarrollo2.view.GameView;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
@@ -15,6 +17,12 @@ import javafx.scene.paint.Paint;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Panel visual que representa el tablero de juego y gestiona la interacción del usuario en Reverse Dots.
+ *
+ * @author Sebastian Quiros Solano --- C36342
+ * @version 1.0
+ */
 public class BoardPanel extends Pane {
 
     private GameController gameController;
@@ -24,19 +32,26 @@ public class BoardPanel extends Pane {
     private int cellSize = 60;
 
     // Colores del tablero (JavaFX Paint)
-    private static final Paint EMPTY_COLOR = javafx.scene.paint.Color.web("#2E7D32");  // verde oscuro
+    private static final Paint EMPTY_COLOR = javafx.scene.paint.Color.web("#2E7D32");  //verde oscuro
     private static final Paint BLACK_COLOR = javafx.scene.paint.Color.BLACK;
     private static final Paint WHITE_COLOR = javafx.scene.paint.Color.WHITE;
-    private static final Paint VALID_MOVE_COLOR = javafx.scene.paint.Color.web("#A5D6A7AA"); // verde claro semitransparente
-    private static final Paint GRID_COLOR = javafx.scene.paint.Color.web("#1B5E20");  // verde más oscuro para líneas
+    private static final Paint VALID_MOVE_COLOR = javafx.scene.paint.Color.web("#A5D6A7AA"); //verde claro semitransparente
+    private static final Paint GRID_COLOR = javafx.scene.paint.Color.web("#1B5E20");  //verde más oscuro para líneas
 
+    /**
+     * Crea el panel del tablero con el controlador y la vista principal.
+     * @param gameController Controlador de la partida
+     * @param parent Vista principal del juego
+     */
     public BoardPanel(GameController gameController, GameView parent) {
         this.gameController = gameController;
         this.parent = parent;
         initCanvas();
     }
 
-    /** Redibuja el tablero. Llamar cada vez que cambie el estado del juego. */
+    /**
+     * Redibuja el tablero. Llamar cada vez que cambie el estado del juego.
+     */
     public void repaint() {
         if (!gameController.isGameStarted()) return;
         drawBoard();
@@ -44,43 +59,52 @@ public class BoardPanel extends Pane {
         drawValidMoves();
     }
 
+    /**
+     * Inicializa el canvas y los listeners de clic.
+     */
     private void initCanvas() {
-        // Calcular tamaño del canvas según el tamaño del tablero (se inicializa con 8x8 por defecto)
-        // Se recalcula en repaint() si el tablero ya está iniciado
+        //calcula el tamaño del canvas según el tamaño del tablero (se inicializa con 8x8 por defecto)
+        //se recalcula en repaint() si el tablero ya está iniciado
         int defaultSize = 8;
         int canvasSize  = defaultSize * cellSize;
         canvas = new Canvas(canvasSize, canvasSize);
         gc     = canvas.getGraphicsContext2D();
 
-        // Registrar el handler de clics sobre el canvas
+        //se registra el handler de clics sobre el canvas
         canvas.setOnMouseClicked(this::handleClick);
 
         this.getChildren().add(canvas);
     }
 
+    /**
+     * Dibuja el fondo y la cuadrícula del tablero.
+     */
     private void drawBoard() {
         int boardSize  = gameController.getBoard().getSize();
         int canvasSize = boardSize * cellSize;
 
-        // Redimensionar canvas si el tamaño cambió
+        //se redimensiona el canvas si el tamaño cambió
         if (canvas.getWidth() != canvasSize) {
             canvas.setWidth(canvasSize);
             canvas.setHeight(canvasSize);
         }
 
-        // Fondo verde
+        //fondo verde
         gc.setFill(EMPTY_COLOR);
         gc.fillRect(0, 0, canvasSize, canvasSize);
 
-        // Dibujar la cuadrícula
+        //dibuja la cuadrícula
         gc.setStroke(GRID_COLOR);
         gc.setLineWidth(1.5);
         for (int i = 0; i <= boardSize; i++) {
-            gc.strokeLine(i * cellSize, 0, i * cellSize, canvasSize);         // líneas verticales
-            gc.strokeLine(0, i * cellSize, canvasSize, i * cellSize);         // líneas horizontales
+            gc.strokeLine(i * cellSize, 0, i * cellSize, canvasSize);// líneas verticales
+            gc.strokeLine(0, i * cellSize, canvasSize, i * cellSize);//lineas horizontales
         }
     }
 
+    /**
+     * Dibuja las fichas en el tablero.
+     */
     private void drawPieces() {
         int boardSize = gameController.getBoard().getSize();
         int margin    = (int) (cellSize * 0.1);
@@ -95,7 +119,7 @@ public class BoardPanel extends Pane {
                 } else if (cell == CellState.WHITE) {
                     gc.setFill(WHITE_COLOR);
                 } else {
-                    continue; // celda vacía, no dibujar
+                    continue; //es una celda vacía, no se dibuja nada
                 }
 
                 Point2D center = getCellCenter(row, col);
@@ -103,7 +127,7 @@ public class BoardPanel extends Pane {
                             center.getY() - diameter / 2.0,
                             diameter, diameter);
 
-                // Borde de la ficha
+                //es el borde de la ficha
                 gc.setStroke(javafx.scene.paint.Color.GRAY);
                 gc.setLineWidth(1);
                 gc.strokeOval(center.getX() - diameter / 2.0,
@@ -113,6 +137,9 @@ public class BoardPanel extends Pane {
         }
     }
 
+    /**
+     * Dibuja los movimientos válidos para el jugador actual.
+     */
     private void drawValidMoves() {
         if (!gameController.isGameStarted() || gameController.isGameOver()) return;
 
@@ -129,6 +156,10 @@ public class BoardPanel extends Pane {
         }
     }
 
+    /**
+     * Maneja el clic del usuario sobre el tablero.
+     * @param event Evento de clic
+     */
     private void handleClick(MouseEvent event) {
         if (!gameController.isGameStarted() || gameController.isGameOver()) return;
 
@@ -165,6 +196,12 @@ public class BoardPanel extends Pane {
         }
     }
 
+    /**
+     * Convierte coordenadas de píxel a celda del tablero.
+     * @param x Coordenada X
+     * @param y Coordenada Y
+     * @return Posición de la celda o null si está fuera de rango
+     */
     private Position pixelToCell(double x, double y) {
         if (!gameController.isGameStarted()) return null;
         int boardSize = gameController.getBoard().getSize();
@@ -174,12 +211,21 @@ public class BoardPanel extends Pane {
         return new Position(row, col);
     }
 
+    /**
+     * Calcula el centro de una celda en píxeles.
+     * @param row Fila
+     * @param col Columna
+     * @return Centro de la celda como Point2D
+     */
     private Point2D getCellCenter(int row, int col) {
         double x = col * cellSize + cellSize / 2.0;
         double y = row * cellSize + cellSize / 2.0;
         return new Point2D(x, y);
     }
 
+    /**
+     * Muestra un mensaje de fin de juego y opciones al usuario.
+     */
     private void showGameOver() {
         try {
             String message;
@@ -201,12 +247,16 @@ public class BoardPanel extends Pane {
             alert.showAndWait();
 
             if (parent != null) parent.updateStatus("Juego terminado.");
-
+            if (parent != null) parent.onGameFinished();
         } catch (IOException e) {
             if (parent != null) parent.updateStatus("Error al determinar el ganador: " + e.getMessage());
         }
     }
 
+    /**
+     * Asigna la vista principal como padre del panel.
+     * @param parent Vista principal del juego
+     */
     public void setParent(GameView parent) {
         this.parent = parent;
     }

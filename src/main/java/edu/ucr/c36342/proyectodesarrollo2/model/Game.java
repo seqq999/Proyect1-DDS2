@@ -6,8 +6,8 @@ import edu.ucr.c36342.proyectodesarrollo2.model.enums.GameStatus;
 import java.util.Random;
 
 /**
- * Representa una partida completa del juego Reverse Dots.
- * Contiene el tablero, los jugadores y el estado actual del juego.
+ * Representa una partida de Reverse Dots.
+ * Gestiona el estado, jugadores y lógica principal de la partida.
  *
  * @author Sebastian Quiros Solano --- C36342
  * @version 1.0
@@ -45,13 +45,12 @@ public class Game {
         this.player2 = player2;
         this.board = new Board(boardSize);
 
-        // Asignar colores aleatoriamente
+        //asigna los colores aleatoriamente
         assignColorsRandomly();
 
-        // El jugador con fichas negras siempre inicia
+        //el jugador con fichas negras siempre empieza la partida
         this.currentPlayerColor = Color.BLACK;
 
-        // Estado inicial
         this.gameStatus = GameStatus.IN_PROGRESS;
     }
 
@@ -250,6 +249,11 @@ public class Game {
         this.gameStatus = GameStatus.IN_PROGRESS;
     }
 
+    /**
+     * Devuelve una representación en texto del estado del juego.
+     *
+     * @return String con información de la partida
+     */
     @Override
     public String toString() {
         return String.format("Game{player1=%s(%s), player2=%s(%s), currentTurn=%s, status=%s}",
